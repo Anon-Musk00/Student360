@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student 360 Platform - BCET Campus</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #f8f9fa;
+        }
+
+        /* Sticky Header */
+        .sticky-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #667eea !important;
+            text-decoration: none;
+        }
+
+        .navbar-brand:hover {
+            color: #764ba2 !important;
+        }
+
+        .btn-login-header {
+            background: var(--primary-gradient);
+            border: none;
+            padding: 8px 20px;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-login-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+
+        /* Features Section */
+        .features-section {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: var(--primary-gradient);
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 5rem 0;
+            background: #f8f9fa;
+        }
+
+        .about-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #495057;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Header -->
+    <header class="sticky-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-mortarboard-fill me-2"></i>Student 360
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#features">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact">Contact</a>
+                        </li>
+                        <li class="nav-item ms-2 mt-1">
+                            <a href="{% url 'login' %}" class="btn-login-header">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-12 hero-content text-center" data-aos="fade-up">
+                    <!-- Hero Image -->
+                    <div class="mb-4" data-aos="zoom-in" data-aos-delay="200">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" 
+                             alt="Educational Technology Platform" 
+                             class="img-fluid rounded-3 shadow-lg"
+                             style="max-height: 300px; object-fit: cover;">
+                    </div>
+                    
+                    <h1 class="hero-title">
+                        <i class="bi bi-mortarboard-fill me-3"></i>Student 360 Platform
+                    </h1>
+                    <p class="hero-subtitle">Comprehensive Educational Management System</p>
+                    <p class="hero-description">
+                        A versatile educational management platform designed to streamline administrative processes, 
+                        enhance student experience, and empower educators across multiple institutions. Our integrated system handles everything from 
+                        admissions and academics to library management and beyond, adaptable to any college or university.
+                    </p>
+                    
+                    <div class="row justify-content-center g-4 mb-4">
+                        <div class="col-md-3 col-6">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="bi bi-check-circle-fill text-white me-2"></i>
+                                <span>Complete Student Lifecycle</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="bi bi-check-circle-fill text-white me-2"></i>
+                                <span>Academic Excellence</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="bi bi-check-circle-fill text-white me-2"></i>
+                                <span>Library Integration</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="bi bi-check-circle-fill text-white me-2"></i>
+                                <span>Real-time Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'register' %}" class="btn btn-light btn-lg me-3">
+                            <i class="bi bi-person-plus-fill me-2"></i>Register Now
+                        </a>
+                        <a href="#features" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-arrow-down-circle me-2"></i>Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="display-5 fw-bold mb-3">Platform Features</h2>
+                <p class="lead text-muted">Comprehensive tools for modern educational management</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h4 class="feature-title">Student Management</h4>
+                        <p class="feature-description">
+                            Complete student lifecycle management from admission to graduation. 
+                            Track academic progress, personal information, and status updates.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-person-badge-fill"></i>
+                        </div>
+                        <h4 class="feature-title">Faculty Administration</h4>
+                        <p class="feature-description">
+                            Manage teacher profiles, subject assignments, and departmental coordination. 
+                            Streamline faculty operations and performance tracking.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-calendar-week-fill"></i>
+                        </div>
+                        <h4 class="feature-title">Timetable Management</h4>
+                        <p class="feature-description">
+                            Smart scheduling system for classes, exams, and events. 
+                            Optimize resource allocation and prevent scheduling conflicts.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-book-fill"></i>
+                        </div>
+                        <h4 class="feature-title">Library System</h4>
+                        <p class="feature-description">
+                            Digital library management with book tracking, issue/return system, 
+                            and catalog management. Integrated with academic subjects.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h4 class="feature-title">Academic Tracking</h4>
+                        <p class="feature-description">
+                            Comprehensive academic performance monitoring. 
+                            Track grades, attendance, and progress reports in real-time.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h4 class="feature-title">Secure Access</h4>
+                        <p class="feature-description">
+                            Role-based authentication system ensuring data privacy and secure access 
+                            to authorized users only.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="stat-card">
+                        <div class="stat-number floating">200+</div>
+                        <div class="stat-label">Students</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="stat-card">
+                        <div class="stat-number floating">50+</div>
+                        <div class="stat-label">Faculty Members</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="stat-card">
+                        <div class="stat-number floating">100+</div>
+                        <div class="stat-label">Books in Library</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="stat-card">
+                        <div class="stat-number floating">15+</div>
+                        <div class="stat-label">Departments</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <h2 class="display-6 fw-bold mb-4">About Student 360 Platform</h2>
+                    <div class="about-content">
+                        <p class="mb-3">
+                            The Student 360 Platform is a revolutionary educational management system designed specifically 
+                            for BCET Campus. Our platform integrates all aspects of educational administration into a single, 
+                            user-friendly interface.
+                        </p>
+                        <p class="mb-3">
+                            Built with modern technology and best practices, our system ensures seamless operations for 
+                            students, faculty, and administrators. From admission processing to academic tracking, 
+                            library management to timetable scheduling - we've got it all covered.
+                        </p>
+                        <p>
+                            Our mission is to enhance the educational experience through technology, enabling better 
+                            communication, efficient processes, and data-driven decision making for academic excellence.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="row g-4">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <i class="bi bi-gear-fill text-primary" style="font-size: 3rem;"></i>
+                                <h5 class="mt-2">Automated Processes</h5>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <i class="bi bi-cloud-fill text-primary" style="font-size: 3rem;"></i>
+                                <h5 class="mt-2">Cloud-Based</h5>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <i class="bi bi-phone-fill text-primary" style="font-size: 3rem;"></i>
+                                <h5 class="mt-2">Mobile Friendly</h5>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <i class="bi bi-lock-fill text-primary" style="font-size: 3rem;"></i>
+                                <h5 class="mt-2">Secure & Private</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="bi bi-mortarboard-fill me-2"></i>
+                Student 360 Platform © 2026 | Educational Management System | Made with ❤️ by Team Phony innovators
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

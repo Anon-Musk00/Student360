@@ -1,0 +1,125 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Page background */
+body {
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    min-height: 100vh;
+    padding: 20px;
+}
+/* Main container */
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+/* Heading */
+.container h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Input field*/ 
+.container input[type="text"] {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Button */
+.btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    font-size: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Status text */
+.container p {
+    margin-top: 15px;
+    font-size: 16px;
+}
+
+/* Back link */
+.container a {
+display: inline-block;
+    margin-top: 15px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Status Section*/ 
+#statusSection {
+    max-width: 800px;
+    margin: 30px auto;
+}
+
+/* Cards */
+.card {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+}
+
+/* Card headings */
+.card h2 {
+    margin-bottom: 10px;
+    color: #007bff;
+}
+
+/* Card content */
+.card p {
+    color: #444;
+    font-size: 15px;
+}  
+/* Grid layout */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Square clickable cards */
+.card {
+    height: 150px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect */
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    background-color: #f0f8ff;
+}
+
+/* Card title */
+.card h2 {
+    font-size: 18px;
+}

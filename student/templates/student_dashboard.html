@@ -1,0 +1,4361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Student 360 Platform</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar-header {
+            position: sticky;
+            top: 0;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            z-index: 10;
+        }
+
+        .sidebar-header h3 {
+            color: white;
+            font-weight: 600;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .sidebar.collapsed .sidebar-header h3 {
+            display: none;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        /* Menu Styles */
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 15px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            margin: 5px 0;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: #fff;
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-left-color: #fff;
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar.collapsed .menu-item {
+            text-align: center;
+            padding: 15px 10px;
+        }
+
+        .sidebar.collapsed .menu-item i {
+            margin-right: 0;
+            margin-bottom: 5px;
+        }
+
+        .sidebar.collapsed .menu-text {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 80px;
+        }
+
+        /* Header Styles */
+        .content-header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-section h1 {
+            color: #2c3e50;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .welcome-section p {
+            color: #7f8c8d;
+            margin: 5px 0 0 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .user-details h5 {
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .user-details p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        /* Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h6 {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .info-card p {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Enhanced Profile Styles */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .profile-avatar {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .avatar-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .avatar-placeholder i {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .profile-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profile-info .student-id {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .profile-info .department-info {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .profile-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .profile-badges .badge {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+
+        /* Enhanced Profile Section Styles */
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .profile-avatar {
+            position: relative;
+            z-index: 2;
+        }
+
+        .avatar-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .avatar-img:hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .avatar-placeholder:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .avatar-placeholder i {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .profile-info {
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-info h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #ffffff, #f0f8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .student-id {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .department-info {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .profile-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .profile-badges .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-section-group {
+            margin-bottom: 40px;
+        }
+
+        .group-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .group-title:hover {
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            transform: translateX(5px);
+        }
+
+        .group-title i {
+            color: #667eea;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .group-title:hover i {
+            color: #764ba2;
+            transform: scale(1.1);
+        }
+
+        .education-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .education-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .education-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .education-card h5 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .education-card h5 i {
+            color: #667eea;
+            font-size: 1.3rem;
+        }
+
+        /* Enhanced info cards for profile */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .info-card h6 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-card h6 i {
+            color: #667eea;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover h6 i {
+            color: #764ba2;
+            transform: scale(1.1);
+        }
+
+        .info-card p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .info-card .text-muted {
+            font-size: 0.85rem;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+
+        .group-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f3f5;
+        }
+
+        .group-title i {
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .education-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .education-card h5 {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .education-card h5 i {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .education-card .info-grid {
+            margin-bottom: 0;
+        }
+
+        .education-card .info-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+        }
+
+        /* Toggle Button */
+        .toggle-btn {
+            position: relative;
+            top: auto;
+            left: auto;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .toggle-btn:hover {
+            background: #764ba2;
+            transform: scale(1.1);
+        }
+
+        /* Header layout with toggle button */
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Advanced Micro-interactions and Enhanced UI */
+        .progress-overview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-overview:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-overview::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .progress-overview::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: sweep 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes sweep {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .progress-stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6));
+            backdrop-filter: blur(20px);
+            border: 3px solid rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .progress-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .progress-stat-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .progress-stat-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.7));
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .progress-stat-card:active {
+            transform: translateY(-4px) scale(1.01);
+            transition-duration: 0.1s;
+        }
+
+        .progress-stat-card .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            animation: pulse 2s ease-in-out infinite;
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-stat-card:hover .stat-value {
+            transform: scale(1.1);
+            color: #1a252f;
+            background: linear-gradient(45deg, #1a252f, #2c3e50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .progress-stat-card .stat-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            opacity: 1;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #34495e;
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-stat-card:hover .stat-label {
+            opacity: 1;
+            letter-spacing: 1.5px;
+            color: #1a252f;
+            background: linear-gradient(45deg, #1a252f, #34495e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .chart-container {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            transform: translateY(0);
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        .chart-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, transparent 50%, rgba(118, 75, 162, 0.02) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .chart-container:hover::after {
+            opacity: 1;
+        }
+
+        /* Skeleton Loading States */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-chart {
+            height: 300px;
+            margin: 15px 0;
+        }
+
+        .skeleton-stat {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .skeleton-text {
+            height: 20px;
+            margin-bottom: 10px;
+            width: 60%;
+        }
+
+        .skeleton-text.short {
+            width: 40%;
+        }
+
+        .skeleton-text.long {
+            width: 80%;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            backdrop-filter: blur(2px);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            color: #667eea;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Progress Animations and Milestone Celebrations */
+        .milestone-celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+            z-index: 1000;
+            text-align: center;
+            animation: celebration-pop 0.6s ease-out forwards;
+        }
+
+        @keyframes celebration-pop {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+            50% { transform: translate(-50%, -50%) scale(1.1) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+
+        .milestone-celebration h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .milestone-celebration p {
+            margin: 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            animation: confetti-fall 3s ease-in-out;
+            z-index: 999;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 20px auto;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 8;
+        }
+
+        .progress-ring-progress {
+            fill: none;
+            stroke: white;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 339.292;
+            stroke-dashoffset: 339.292;
+            animation: progress-ring-fill 2s ease-out forwards;
+        }
+
+        @keyframes progress-ring-fill {
+            to {
+                stroke-dashoffset: 84.823;
+            }
+        }
+
+        .progress-ring-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Enhanced Typography and Visual Hierarchy */
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .chart-container:hover .chart-title::after {
+            width: 100%;
+        }
+
+        .chart-title i {
+            color: #667eea;
+            font-size: 1.2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chart-container:hover .chart-title i {
+            transform: scale(1.2) rotate(10deg);
+            color: #764ba2;
+        }
+
+        .chart-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            animation: badge-pulse 2s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: badge-shine 3s ease-in-out infinite;
+        }
+
+        @keyframes badge-shine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes badge-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.05); }
+        }
+
+        .performance-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .performance-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .performance-indicator:hover::before {
+            left: 100%;
+        }
+
+        .performance-indicator:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .performance-indicator.excellent {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.2));
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .performance-indicator.good {
+            background: linear-gradient(135deg, rgba(54, 162, 235, 0.1), rgba(54, 162, 235, 0.2));
+            color: #36a2eb;
+            border: 1px solid rgba(54, 162, 235, 0.3);
+        }
+
+        .performance-indicator.average {
+            background: linear-gradient(135deg, rgba(255, 206, 86, 0.1), rgba(255, 206, 86, 0.2));
+            color: #ffce56;
+            border: 1px solid rgba(255, 206, 86, 0.3);
+        }
+
+        .performance-indicator.poor {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.2));
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .chart-canvas-wrapper {
+            position: relative;
+            height: 300px;
+            margin: 15px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02));
+        }
+
+        .chart-canvas-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .chart-container:hover .chart-canvas-wrapper::before {
+            opacity: 1;
+        }
+
+        /* Data Visualization Enhancements - Simplified */
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .legend-item:hover {
+            color: #2c3e50;
+            transform: scale(1.05);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover .legend-color {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        /* Enhanced Responsive Design */
+        @media (max-width: 992px) {
+            .progress-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .chart-canvas-wrapper {
+                height: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .progress-overview {
+                padding: 20px;
+            }
+            
+            .progress-stats {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .progress-stat-card {
+                padding: 15px;
+            }
+            
+            .progress-stat-card .stat-value {
+                font-size: 2rem;
+            }
+            
+            .chart-container {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .chart-canvas-wrapper {
+                height: 250px;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .chart-title {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-overview h3 {
+                font-size: 1.5rem;
+            }
+            
+            .progress-stat-card .stat-value {
+                font-size: 1.8rem;
+            }
+            
+            .chart-canvas-wrapper {
+                height: 200px;
+            }
+            
+            .chart-container {
+                padding: 15px;
+            }
+        }
+
+        /* Loading animation for charts */
+        .chart-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            color: #667eea;
+        }
+
+        .chart-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .chart-container {
+                background: #2c3e50;
+                color: #ecf0f1;
+            }
+            
+            .chart-title {
+                color: #ecf0f1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .toggle-btn {
+                left: 20px;
+            }
+            
+            .toggle-btn.collapsed {
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <h3>Student Portal</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item {% if not quiz_results %}active{% endif %}" onclick="showSection('profile')">
+                <i class="bi bi-person-circle"></i>
+                <span class="menu-text">My Profile</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('subjects')">
+                <i class="bi bi-journal-bookmark-fill"></i>
+                <span class="menu-text">My Subjects</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('timetable')">
+                <i class="bi bi-calendar-week"></i>
+                <span class="menu-text">Timetable</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('exams')">
+                <i class="bi bi-file-earmark-text"></i>
+                <span class="menu-text">Exams</span>
+            </a>
+                        <a href="#" class="menu-item" onclick="showSection('library')">
+                <i class="bi bi-book-half"></i>
+                <span class="menu-text">Library</span>
+            </a>
+            <a href="#" class="menu-item {% if quiz_results %}active{% endif %}" onclick="showSection('quiz')">
+                <i class="bi bi-question-circle"></i>
+                <span class="menu-text">Quiz</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('academic-progress')">
+                <i class="bi bi-graph-up"></i>
+                <span class="menu-text">Academic Progress</span>
+            </a>
+            <a href="{% url 'logout' %}" class="menu-item" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <i class="bi bi-box-arrow-right"></i>
+                <span class="menu-text">Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Header -->
+        <div class="content-header">
+            <div class="welcome-section">
+                <!-- Toggle Button -->
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1>Welcome back, {{ student.first_name }}!</h1>
+                <p>Here's your academic dashboard</p>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ student.first_name|first|upper }}{{ student.last_name|first|upper }}
+                </div>
+                <div class="user-details">
+                    <h5>{{ student.first_name }} {{ student.last_name }}</h5>
+                    <p>{{ student.student_id }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Results Notification -->
+        {% if quiz_results and quiz_results.success %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="quizResultsAlert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-trophy-fill me-3" style="font-size: 1.5rem; color: #28a745;"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Quiz Completed Successfully! 🎉</h5>
+                    <p class="mb-1">
+                        <strong>{{ quiz_results.results.quiz_title }}</strong> - 
+                        You scored <strong>{{ quiz_results.results.marks_obtained }}/{{ quiz_results.results.total_questions }}</strong> marks
+                    </p>
+                    <p class="mb-0">
+                        <span class="badge bg-success">{{ quiz_results.results.percentage|floatformat:1 }}%</span> 
+                        <span class="text-muted">({{ quiz_results.results.correct_answers }}/{{ quiz_results.results.total_questions }} correct)</span>
+                    </p>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <script>
+        // Auto-hide quiz results notification after 5 seconds
+        setTimeout(function() {
+            const alert = document.getElementById('quizResultsAlert');
+            if (alert) {
+                alert.classList.remove('show');
+                setTimeout(function() {
+                    alert.remove();
+                }, 150);
+            }
+        }, 5000);
+        
+        // Prevent notification from showing again when switching sections
+        document.addEventListener('DOMContentLoaded', function() {
+            // Clear any quiz results from session storage to prevent persistence
+            sessionStorage.removeItem('quiz_results_shown');
+            
+            // Mark that quiz results have been shown for this session
+            const alert = document.getElementById('quizResultsAlert');
+            if (alert) {
+                sessionStorage.setItem('quiz_results_shown', 'true');
+                
+                // Automatically show quiz section when quiz results are present
+                showSection('quiz');
+            }
+        });
+        
+        // Hide notification if user navigates to another section
+        function hideQuizNotification() {
+            const alert = document.getElementById('quizResultsAlert');
+            if (alert) {
+                alert.remove();
+            }
+        }
+        
+        // Add event listeners to navigation links
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('a[href^="#"]')) {
+                hideQuizNotification();
+            }
+        });
+        </script>
+        {% endif %}
+
+        <!-- Profile Section -->
+        <div id="profile-section" class="content-section {% if not quiz_results %}active{% endif %}">
+            <h2 class="section-title">
+                <i class="bi bi-person-circle"></i>
+                My Profile
+            </h2>
+            
+            <!-- Profile Header with Avatar -->
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    {% if student.student_image %}
+                        <img src="{{ student.student_image.url }}" alt="Profile Picture" class="avatar-img">
+                    {% else %}
+                        <div class="avatar-placeholder">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="profile-info">
+                    <h3>{{ student.first_name }} {{ student.last_name }}</h3>
+                    <p class="student-id">{{ student.student_id }}</p>
+                    <p class="department-info">{{ student.department|default:"Not assigned" }} • Semester {{ student.semester|default:"N/A" }}</p>
+                    <div class="profile-badges">
+                        <span class="badge bg-success">{{ student.status|title }}</span>
+                        {% if student.gender %}
+                            <span class="badge bg-info">{{ student.gender|title }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Family Information -->
+            <div class="profile-section-group">
+                <h4 class="group-title"><i class="bi bi-people"></i> Family Information</h4>
+                <div class="info-grid">
+                    {% if student.father_name %}
+                    <div class="info-card">
+                        <h6><i class="bi bi-person"></i> Father's Name</h6>
+                        <p>{{ student.father_name }}</p>
+                        {% if student.father_occupation %}
+                        <small class="text-muted">Occupation: {{ student.father_occupation }}</small>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if student.mother_name %}
+                    <div class="info-card">
+                        <h6><i class="bi bi-person"></i> Mother's Name</h6>
+                        <p>{{ student.mother_name }}</p>
+                        {% if student.mother_occupation %}
+                        <small class="text-muted">Occupation: {{ student.mother_occupation }}</small>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Academic Information -->
+            <div class="profile-section-group">
+                <h4 class="group-title"><i class="bi bi-mortarboard"></i> Academic Information</h4>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h6><i class="bi bi-building"></i> Department</h6>
+                        <p>{{ student.department|default:"Not assigned" }}</p>
+                    </div>
+                    <div class="info-card">
+                        <h6><i class="bi bi-book"></i> Course</h6>
+                        <p>{{ student.course|default:"Not assigned" }}</p>
+                    </div>
+                    <div class="info-card">
+                        <h6><i class="bi bi-calendar-check"></i> Current Semester</h6>
+                        <p>{{ student.semester|default:"Not assigned" }}</p>
+                    </div>
+                    <div class="info-card">
+                        <h6><i class="bi bi-collection"></i> Batch</h6>
+                        <p>{{ student.batch|default:"Not assigned" }}</p>
+                    </div>
+                    <div class="info-card">
+                        <h6><i class="bi bi-calendar-plus"></i> Registration Date</h6>
+                        <p>{{ student.registration_date|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="info-card">
+                        <h6><i class="bi bi-calendar-event"></i> Enrollment Date</h6>
+                        <p>{{ student.enrollment_date|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Educational Background -->
+            <div class="profile-section-group">
+                <h4 class="group-title"><i class="bi bi-award"></i> Educational Background</h4>
+                
+                {% if student.tenth_percentage %}
+                <div class="education-card">
+                    <h5><i class="bi bi-1-circle"></i> 10th Standard</h5>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h6>Board</h6>
+                            <p>{{ student.tenth_board|default:"N/A" }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Percentage</h6>
+                            <p>{{ student.tenth_percentage }}%</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Year</h6>
+                            <p>{{ student.tenth_year|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if student.twelfth_percentage %}
+                <div class="education-card">
+                    <h5><i class="bi bi-2-circle"></i> 12th Standard</h5>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h6>Board</h6>
+                            <p>{{ student.twelfth_board|default:"N/A" }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Percentage</h6>
+                            <p>{{ student.twelfth_percentage }}%</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Year</h6>
+                            <p>{{ student.twelfth_year|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if student.diploma_percentage %}
+                <div class="education-card">
+                    <h5><i class="bi bi-3-circle"></i> Diploma</h5>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h6>Course</h6>
+                            <p>{{ student.diploma_course|default:"N/A" }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Institution</h6>
+                            <p>{{ student.diploma_institution|default:"N/A" }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Percentage</h6>
+                            <p>{{ student.diploma_percentage }}%</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Year</h6>
+                            <p>{{ student.diploma_year|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if student.graduation_percentage %}
+                <div class="education-card">
+                    <h5><i class="bi bi-4-circle"></i> Graduation</h5>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h6>Degree</h6>
+                            <p>{{ student.graduation_degree|default:"N/A" }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>University</h6>
+                            <p>{{ student.graduation_university|default:"N/A" }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Percentage</h6>
+                            <p>{{ student.graduation_percentage }}%</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Year</h6>
+                            <p>{{ student.graduation_year|default:"N/A" }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h6>Status</h6>
+                            <p>{{ student.graduation_status|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Account Settings -->
+            <div class="profile-section-group">
+                <h4 class="group-title"><i class="bi bi-gear"></i> Account Settings</h4>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Password Security</h6>
+                                <p class="text-muted mb-0">Change your account password for enhanced security</p>
+                            </div>
+                            <button type="button" class="btn btn-outline-warning" onclick="changePassword()">
+                                <i class="bi bi-key me-1"></i>Change Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Section -->
+        <div id="academic-section" class="content-section">
+            <h2 class="section-title">
+                <i class="bi bi-book"></i>
+                Academic Information
+            </h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h6><i class="bi bi-building"></i> Department</h6>
+                    <p>{{ student.department|default:"Not assigned" }}</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-calendar-check"></i> Current Semester</h6>
+                    <p>{{ student.semester|default:"Not assigned" }}</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-collection"></i> Course</h6>
+                    <p>{{ student.course|default:"Not assigned" }}</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-people"></i> Batch</h6>
+                    <p>{{ student.batch|default:"Not assigned" }}</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-calendar-event"></i> Date of Birth</h6>
+                    <p>{% if student.date_of_birth %}{{ student.date_of_birth|date:"F d, Y" }}{% else %}Not provided{% endif %}</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-telephone"></i> Phone</h6>
+                    <p>{{ student.phone_number|default:"Not provided" }}</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-envelope"></i> Email</h6>
+                    <p>{{ student.college_email|default:"Not provided" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subjects Section -->
+        <div id="subjects-section" class="content-section">
+            <h2 class="section-title">
+                <i class="bi bi-journal-bookmark-fill"></i>
+                My Subjects
+            </h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h6>Subjects of:</h6>
+                    <p><strong>Student's Department</strong></p>
+                    <p>{{ student.department|default:"Not assigned" }}</p>
+                </div>
+                <div class="info-card">
+                    <h6>Current Semester:</h6>
+                    <p><strong>Student's Current Semester</strong></p>
+                    <p>{{ student.semester|default:"Not assigned" }}</p>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5 class="mb-3">Subject List</h5>
+                {% if subjects %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Type</th>
+                                    <th>Credits</th>
+                                    <th>Teacher</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subject in subjects %}
+                                    <tr>
+                                        <td><strong>{{ subject.subject_code }}</strong></td>
+                                        <td>{{ subject.subject_name }}</td>
+                                        <td>
+                                            <span class="badge {% if subject.subject_type == 'core' %}bg-primary{% elif subject.subject_type == 'elective' %}bg-success{% else %}bg-info{% endif %}">
+                                                {{ subject.get_subject_type_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ subject.credits }}</td>
+                                        <td>
+                                            {% if subject.teacher %}
+                                                {{ subject.teacher.first_name }} {{ subject.teacher.last_name }}
+                                            {% else %}
+                                                <span class="text-muted">Not assigned</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">
+                                            No subjects found for your department and semester.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        No subjects are currently assigned for your department and semester. Please contact the administration if you believe this is an error.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Timetable Section -->
+        <div id="timetable-section" class="content-section">
+            <h2 class="section-title">
+                <i class="bi bi-calendar-week"></i>
+                My Timetable
+            </h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h6>Department</h6>
+                    <p>{{ student.department|default:"Not assigned" }}</p>
+                </div>
+                <div class="info-card">
+                    <h6>Semester</h6>
+                    <p>{{ student.semester|default:"Not assigned" }}</p>
+                </div>
+                <div class="info-card">
+                    <h6>Course</h6>
+                    <p>{{ student.course|default:"Not assigned" }}</p>
+                </div>
+                <div class="info-card">
+                    <h6>Batch</h6>
+                    <p>{{ student.batch|default:"Not assigned" }}</p>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5 class="mb-3">Weekly Schedule</h5>
+                {% if timetable_entries %}
+                    <!-- Timetable Grid Display -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered timetable-grid">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th class="day-column">Day / Time</th>
+                                    <th>09:00 - 10:00</th>
+                                    <th>10:00 - 11:00</th>
+                                    <th>11:00 - 12:00</th>
+                                    <th>12:00 - 01:00</th>
+                                    <th>01:00 - 02:00</th>
+                                    <th>02:00 - 03:00</th>
+                                    <th>03:00 - 04:00</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Monday -->
+                                <tr>
+                                    <td class="day-column"><strong>Monday</strong></td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'mon' and entry.time_slot == '09-10' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'mon' and entry.time_slot == '10-11' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'mon' and entry.time_slot == '11-12' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'mon' and entry.time_slot == '12-01' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'mon' and entry.time_slot == '01-02' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'mon' and entry.time_slot == '02-03' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'mon' and entry.time_slot == '03-04' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                </tr>
+                                <!-- Tuesday -->
+                                <tr>
+                                    <td class="day-column"><strong>Tuesday</strong></td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'tue' and entry.time_slot == '09-10' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'tue' and entry.time_slot == '10-11' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'tue' and entry.time_slot == '11-12' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'tue' and entry.time_slot == '12-01' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'tue' and entry.time_slot == '01-02' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'tue' and entry.time_slot == '02-03' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'tue' and entry.time_slot == '03-04' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                </tr>
+                                <!-- Wednesday -->
+                                <tr>
+                                    <td class="day-column"><strong>Wednesday</strong></td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'wed' and entry.time_slot == '09-10' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'wed' and entry.time_slot == '10-11' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'wed' and entry.time_slot == '11-12' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'wed' and entry.time_slot == '12-01' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'wed' and entry.time_slot == '01-02' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'wed' and entry.time_slot == '02-03' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'wed' and entry.time_slot == '03-04' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                </tr>
+                                <!-- Thursday -->
+                                <tr>
+                                    <td class="day-column"><strong>Thursday</strong></td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'thu' and entry.time_slot == '09-10' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'thu' and entry.time_slot == '10-11' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'thu' and entry.time_slot == '11-12' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'thu' and entry.time_slot == '12-01' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'thu' and entry.time_slot == '01-02' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'thu' and entry.time_slot == '02-03' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'thu' and entry.time_slot == '03-04' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                </tr>
+                                <!-- Friday -->
+                                <tr>
+                                    <td class="day-column"><strong>Friday</strong></td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'fri' and entry.time_slot == '09-10' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'fri' and entry.time_slot == '10-11' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'fri' and entry.time_slot == '11-12' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'fri' and entry.time_slot == '12-01' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'fri' and entry.time_slot == '01-02' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'fri' and entry.time_slot == '02-03' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'fri' and entry.time_slot == '03-04' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                </tr>
+                                <!-- Saturday -->
+                                <tr>
+                                    <td class="day-column"><strong>Saturday</strong></td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'sat' and entry.time_slot == '09-10' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'sat' and entry.time_slot == '10-11' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'sat' and entry.time_slot == '11-12' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'sat' and entry.time_slot == '12-01' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'sat' and entry.time_slot == '01-02' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'sat' and entry.time_slot == '02-03' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                    <td class="subject-cell">
+                                        {% for entry in timetable_entries %}{% if entry.day == 'sat' and entry.time_slot == '03-04' %}<strong>{{ entry.subject }}</strong><br><small>{{ entry.room }}</small>{% endif %}{% endfor %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Add CSS for timetable grid -->
+                    <style>
+                        .timetable-grid {
+                            border-collapse: collapse;
+                            font-size: 0.9rem;
+                        }
+                        .timetable-grid th,
+                        .timetable-grid td {
+                            border: 1px solid #dee2e6;
+                            padding: 8px;
+                            text-align: center;
+                            vertical-align: middle;
+                        }
+                        .timetable-grid .day-column {
+                            background-color: #f8f9fa;
+                            font-weight: bold;
+                            text-align: left;
+                            width: 120px;
+                        }
+                        .timetable-grid .lunch-column {
+                            background-color: #fff3cd;
+                        }
+                        .timetable-grid .subject-cell {
+                            background-color: #e3f2fd;
+                            min-height: 60px;
+                        }
+                        .timetable-grid .lunch-cell {
+                            background-color: #ffc107 !important;
+                            color: #000;
+                            font-weight: bold;
+                        }
+                        .timetable-grid .empty-cell {
+                            background-color: #f8f9fa;
+                            color: #6c757d;
+                        }
+                    </style>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        No timetable is currently available for <strong>{{ student.department }}</strong> department, semester <strong>{{ student.semester }}</strong>. 
+                        Please contact the administration if you believe this is an error.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Library Section -->
+        <div id="library-section" class="content-section">
+            <h2 class="section-title">
+                <i class="bi bi-book-half"></i>
+                Library
+            </h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h6>Library Status</h6>
+                    <p><strong>Active Member</strong></p>
+                    <p>Access to all library resources</p>
+                </div>
+                <div class="info-card">
+                    <h6>Books Issued</h6>
+                    <p><strong>0</strong></p>
+                    <p>Currently borrowed books</p>
+                </div>
+                <div class="info-card">
+                    <h6>Due Date</h6>
+                    <p><strong>No books issued</strong></p>
+                    <p>Return schedule available</p>
+                </div>
+                <div class="info-card">
+                    <h6>Library Card</h6>
+                    <p><strong>LIB-{{ student.student_id|default:"0000" }}</strong></p>
+                    <p>Your library identification</p>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Available PDFs</h5>
+                            <div class="text-muted">
+                                <small>
+                                    <i class="bi bi-funnel"></i>
+                                    Filtered for: 
+                                    <span class="badge bg-primary">{{ student.department|default:"Not Assigned" }}</span>
+                                    <span class="badge bg-success">Sem {{ student.semester|default:"N/A" }}</span>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" id="pdfSearch" class="form-control" placeholder="Search PDFs by title or description...">
+                        </div>
+                        <div id="pdfsList" class="table-responsive">
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading PDFs...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exams Section -->
+        <div id="exams-section" class="content-section">
+            <h2 class="section-title">
+                <i class="bi bi-file-earmark-text"></i>
+                Exams
+            </h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h6>Session</h6>
+                    <select class="form-select" id="session-select">
+                        <option value="">Loading sessions...</option>
+                    </select>
+                </div>
+                <div class="info-card">
+                    <h6>Reg No.</h6>
+                    <input type="text" class="form-control" id="reg-no-input" placeholder="Enter registration number">
+                </div>
+                <div class="info-card">
+                    <h6>DOB</h6>
+                    <input type="date" class="form-control" id="dob-input">
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button type="button" class="btn btn-primary btn-lg" onclick="checkResult()">
+                    <i class="bi bi-search me-2"></i>Check Result
+                </button>
+            </div>
+            
+            <!-- Result Display Card -->
+            <div id="result-card" class="mt-4" style="display: none;">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-award-fill me-2"></i>Examination Result
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="result-content">
+                            <!-- Result will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz-section" class="content-section {% if quiz_results %}active{% endif %}">
+            <h2 class="section-title">
+                <i class="bi bi-question-circle"></i>
+                Quiz Management
+            </h2>
+            
+            <!-- Quiz Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <h6><i class="bi bi-list-check text-primary"></i> Available Quizzes</h6>
+                        <p class="mb-0"><strong>{{ available_quizzes|length }}</strong></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <h6><i class="bi bi-check-circle text-success"></i> Attempted</h6>
+                        <p class="mb-0"><strong>{{ attempted_quizzes|length }}</strong></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <h6><i class="bi bi-clock text-warning"></i> Active Now</h6>
+                        <p class="mb-0"><strong>{{ available_quizzes|length }}</strong></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <h6><i class="bi bi-calendar-event text-info"></i> Upcoming</h6>
+                        <p class="mb-0"><strong>{{ available_quizzes|length }}</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Quizzes -->
+            <div class="mt-4">
+                <h5 class="mb-3">
+                    <i class="bi bi-play-circle text-success me-2"></i>Available Quizzes
+                </h5>
+                {% if available_quizzes %}
+                    <div class="row">
+                        {% for quiz in available_quizzes %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card h-100 {% if quiz.is_active_now %}border-success{% elif quiz.is_upcoming %}border-warning{% else %}border-secondary{% endif %}">
+                                    <div class="card-header {% if quiz.is_active_now %}bg-success{% elif quiz.is_upcoming %}bg-warning{% else %}bg-secondary{% endif %} text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-light text-dark">
+                                                <i class="bi bi-book me-1"></i>{{ quiz.subject }}
+                                            </span>
+                                            {% if quiz.is_active_now %}
+                                                <span class="badge bg-danger animate-pulse">LIVE</span>
+                                            {% elif quiz.is_upcoming %}
+                                                <span class="badge bg-info">UPCOMING</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">CLOSED</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ quiz.title }}</h6>
+                                        <p class="card-text text-muted small mb-2">
+                                            <i class="bi bi-person me-1"></i> {{ quiz.teacher }}
+                                        </p>
+                                        
+                                        <div class="row text-center small">
+                                            <div class="col-4">
+                                                <i class="bi bi-question-circle text-primary"></i>
+                                                <br><strong>{{ quiz.total_questions }}</strong>
+                                                <br>Questions
+                                            </div>
+                                            <div class="col-4">
+                                                <i class="bi bi-clock text-warning"></i>
+                                                <br><strong>{{ quiz.duration_minutes }}</strong>
+                                                <br>Minutes
+                                            </div>
+                                            <div class="col-4">
+                                                <i class="bi bi-trophy text-success"></i>
+                                                <br><strong>{{ quiz.total_marks }}</strong>
+                                                <br>Marks
+                                            </div>
+                                        </div>
+                                        
+                                        {% if quiz.instructions %}
+                                            <div class="mt-2">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    {{ quiz.instructions|truncatewords:15 }}
+                                                </small>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <div class="mt-3">
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar-range me-1"></i>
+                                                {{ quiz.start_date|date:"M d, Y H:i" }} - {{ quiz.end_date|date:"M d, Y H:i" }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        {% if quiz.is_active_now %}
+                                            <button class="btn btn-success btn-sm w-100" onclick="startQuiz('{{ quiz.id }}')">
+                                                <i class="bi bi-play-fill me-1"></i>Start Quiz
+                                            </button>
+                                        {% elif quiz.is_upcoming %}
+                                            <button class="btn btn-warning btn-sm w-100" disabled>
+                                                <i class="bi bi-clock me-1"></i>Starts {{ quiz.start_date|timeuntil }}
+                                            </button>
+                                        {% else %}
+                                            <button class="btn btn-secondary btn-sm w-100" disabled>
+                                                <i class="bi bi-x-circle me-1"></i>Quiz Ended
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>No quizzes available</strong> - Your teachers haven't published any quizzes for your subjects yet. Check back later!
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Attempted Quizzes -->
+            {% if attempted_quizzes %}
+                <div class="mt-5">
+                    <h5 class="mb-3">
+                        <i class="bi bi-check-circle text-info me-2"></i>Your Quiz Attempts
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Quiz Title</th>
+                                    <th>Subject</th>
+                                    <th>Teacher</th>
+                                    <th>Status</th>
+                                    <th>Marks</th>
+                                    <th>Percentage</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for quiz in attempted_quizzes %}
+                                    <tr>
+                                        <td><strong>{{ quiz.title }}</strong></td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ quiz.subject }}</span>
+                                        </td>
+                                        <td>{{ quiz.teacher }}</td>
+                                        <td>
+                                            {% if quiz.attempt_status == 'completed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif quiz.attempt_status == 'in_progress' %}
+                                                <span class="badge bg-warning">In Progress</span>
+                                            {% elif quiz.attempt_status == 'expired' %}
+                                                <span class="badge bg-danger">Expired</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Not Started</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if quiz.marks_obtained %}
+                                                <strong>{{ quiz.marks_obtained }}/{{ quiz.total_marks }}</strong>
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if quiz.percentage %}
+                                                <span class="badge {% if quiz.percentage >= 60 %}bg-success{% elif quiz.percentage >= 40 %}bg-warning{% else %}bg-danger{% endif %}">
+                                                    {{ quiz.percentage|floatformat:1 }}%
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if quiz.attempt_status == 'completed' %}
+                                                <button class="btn btn-sm btn-outline-info" onclick="viewQuizResults('{{ quiz.attempt_id }}')">
+                                                    <i class="bi bi-eye me-1"></i>View Results
+                                                </button>
+                                            {% elif quiz.attempt_status == 'not_started' and quiz.is_active_now %}
+                                                <button class="btn btn-sm btn-success" onclick="startQuiz('{{ quiz.id }}')">
+                                                    <i class="bi bi-play me-1"></i>Start
+                                                </button>
+                                            {% elif quiz.attempt_status == 'in_progress' %}
+                                                <button class="btn btn-sm btn-warning" onclick="continueQuiz('{{ quiz.attempt_id }}')">
+                                                    <i class="bi bi-arrow-right-circle me-1"></i>Continue
+                                                </button>
+                                            {% else %}
+                                                <button class="btn btn-sm btn-outline-secondary" disabled>
+                                                    <i class="bi bi-lock me-1"></i>Locked
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Academic Progress Section -->
+        <div id="academic-progress-section" class="content-section">
+            <h2 class="section-title">
+                <i class="bi bi-graph-up"></i>
+                Academic Progress
+            </h2>
+            
+            <!-- Progress Overview Header -->
+            <div class="progress-overview">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="mb-3">Your Academic Journey</h3>
+                        <p class="mb-0 opacity-90">Track your progress and performance throughout your academic career. Stay motivated and reach your goals!</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="performance-indicator {% if student.semester %}{% if student.semester == '1' or student.semester == '2' %}average{% elif student.semester == '3' or student.semester == '4' %}good{% elif student.semester == '5' or student.semester == '6' %}good{% else %}excellent{% endif %}{% else %}average{% endif %}">
+                            <i class="bi bi-trophy-fill"></i>
+                            {% if student.semester %}
+                                {% if student.semester == '1' %}Just Started{% elif student.semester == '2' %}Beginner{% elif student.semester == '3' %}Developing{% elif student.semester == '4' %}Progressing{% elif student.semester == '5' %}Intermediate{% elif student.semester == '6' %}Advanced{% elif student.semester == '7' %}Excelling{% elif student.semester == '8' %}Graduate{% else %}Not Started{% endif %}
+                            {% else %}
+                                Not Started
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Stats Grid -->
+            <div class="progress-stats">
+                <div class="progress-stat-card">
+                    <div class="stat-value">{{ student.semester|default:"0" }}</div>
+                    <div class="stat-label">Current Semester</div>
+                </div>
+                <div class="progress-stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Total Semesters</div>
+                </div>
+                <div class="progress-stat-card">
+                    <div class="stat-value">
+                        {% if student.semester %}
+                            {% if student.semester == "1" %}12.5
+                            {% elif student.semester == "2" %}25
+                            {% elif student.semester == "3" %}37.5
+                            {% elif student.semester == "4" %}50
+                            {% elif student.semester == "5" %}62.5
+                            {% elif student.semester == "6" %}75
+                            {% elif student.semester == "7" %}87.5
+                            {% elif student.semester == "8" %}100
+                            {% else %}0
+                            {% endif %}
+                        {% else %}
+                            0
+                        {% endif %}%
+                    </div>
+                    <div class="stat-label">Completion</div>
+                </div>
+                <div class="progress-stat-card">
+                    <div class="stat-value">{{ student.course|default:"N/A" }}</div>
+                    <div class="stat-label">Course</div>
+                </div>
+            </div>
+            
+            <!-- Academic Performance Graphs -->
+            <div class="mt-4">
+                <div class="row">
+                    <!-- Progress Overview Chart -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <i class="bi bi-pie-chart-fill"></i>
+                                    Academic Progress Overview
+                                </div>
+                                <div class="chart-badge">Live</div>
+                            </div>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="progressChart"></canvas>
+                            </div>
+                            <div class="performance-indicator {% if student.semester %}{% if student.semester == '1' or student.semester == '2' %}average{% elif student.semester == '3' or student.semester == '4' %}good{% elif student.semester == '5' or student.semester == '6' %}good{% else %}excellent{% endif %}{% else %}average{% endif %}">
+                                <i class="bi bi-speedometer2"></i>
+                                {% if student.semester %}
+                                    {% if student.semester == '1' %}12.5% Complete{% elif student.semester == '2' %}25% Complete{% elif student.semester == '3' %}37.5% Complete{% elif student.semester == '4' %}50% Complete{% elif student.semester == '5' %}62.5% Complete{% elif student.semester == '6' %}75% Complete{% elif student.semester == '7' %}87.5% Complete{% elif student.semester == '8' %}100% Complete{% else %}0% Complete{% endif %}
+                                {% else %}
+                                    0% Complete
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Subject Performance Chart -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <i class="bi bi-bar-chart-fill"></i>
+                                    Subject Performance
+                                </div>
+                                <div class="chart-badge">Analytics</div>
+                            </div>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                            <div class="performance-indicator good">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                Real Quiz Results
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Semester-wise Progress Chart -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <i class="bi bi-graph-up"></i>
+                                    Semester-wise Progress
+                                </div>
+                                <div class="chart-badge">Analytics</div>
+                            </div>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="semesterChart"></canvas>
+                            </div>
+                            <div class="performance-indicator {% if student.semester %}{% if student.semester == '1' or student.semester == '2' %}average{% elif student.semester == '3' or student.semester == '4' %}good{% elif student.semester == '5' or student.semester == '6' %}good{% else %}excellent{% endif %}{% else %}average{% endif %}">
+                                <i class="bi bi-trending-up"></i>
+                                {% if student.semester %}
+                                    Currently in Semester {{ student.semester }}
+                                {% else %}
+                                    Semester Not Assigned
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Exams Section -->
+        <div id="exams-section" class="content-section">
+            <h2 class="section-title">
+                <i class="bi bi-file-earmark-text"></i>
+                Examinations
+            </h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h6><i class="bi bi-calendar-check"></i> Upcoming Exams</h6>
+                    <p>2 Exams Scheduled</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-clock-history"></i> Last Exam</h6>
+                    <p>Mid-Term - Mathematics</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-graph-up"></i> Average Score</h6>
+                    <p>78.5%</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-trophy"></i> Rank</h6>
+                    <p>15th in Class</p>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5 class="mb-3">Upcoming Examination Schedule</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Mathematics III</strong></td>
+                                        <td>March 15, 2024</td>
+                                        <td>10:00 AM</td>
+                                        <td><span class="badge bg-warning">Mid-Term</span></td>
+                                        <td><span class="badge bg-info">Upcoming</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Physics Lab</strong></td>
+                                        <td>March 18, 2024</td>
+                                        <td>2:00 PM</td>
+                                        <td><span class="badge bg-primary">Practical</span></td>
+                                        <td><span class="badge bg-info">Upcoming</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>English Communication</strong></td>
+                                        <td>March 20, 2024</td>
+                                        <td>11:00 AM</td>
+                                        <td><span class="badge bg-success">Final</span></td>
+                                        <td><span class="badge bg-secondary">Scheduled</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5 class="mb-3">Recent Exam Results</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Marks Obtained</th>
+                                        <th>Total Marks</th>
+                                        <th>Percentage</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Computer Networks</td>
+                                        <td>Feb 28, 2024</td>
+                                        <td><span class="badge bg-warning">Mid-Term</span></td>
+                                        <td>85</td>
+                                        <td>100</td>
+                                        <td>85%</td>
+                                        <td><span class="badge bg-success">A</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Database Systems</td>
+                                        <td>Feb 25, 2024</td>
+                                        <td><span class="badge bg-warning">Mid-Term</span></td>
+                                        <td>78</td>
+                                        <td>100</td>
+                                        <td>78%</td>
+                                        <td><span class="badge bg-info">B+</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Web Technologies</td>
+                                        <td>Feb 22, 2024</td>
+                                        <td><span class="badge bg-primary">Quiz</span></td>
+                                        <td>92</td>
+                                        <td>100</td>
+                                        <td>92%</td>
+                                        <td><span class="badge bg-success">A+</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5 class="mb-3">Teacher-Created Quizzes</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Quiz Title</th>
+                                        <th>Subject</th>
+                                        <th>Teacher</th>
+                                        <th>Created Date</th>
+                                        <th>Due Date</th>
+                                        <th>Duration</th>
+                                        <th>Questions</th>
+                                        <th>Status</th>
+                                        <th>Score</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Database Management Quiz</strong></td>
+                                        <td>Computer Networks</td>
+                                        <td>Prof. Ramesh Jana</td>
+                                        <td>March 1, 2024</td>
+                                        <td>March 10, 2024</td>
+                                        <td>30 minutes</td>
+                                        <td>15 questions</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                        <td><strong>85%</strong></td>
+                                        <td><button class="btn btn-sm btn-outline-primary" onclick="viewQuizDetails(1)">
+                                            <i class="bi bi-eye"></i> View
+                                        </button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Web Technologies Assessment</strong></td>
+                                        <td>Web Technologies</td>
+                                        <td>Prof. John Cena</td>
+                                        <td>February 25, 2024</td>
+                                        <td>March 5, 2024</td>
+                                        <td>45 minutes</td>
+                                        <td>20 questions</td>
+                                        <td><span class="badge bg-warning">In Progress</span></td>
+                                        <td><strong>-</strong></td>
+                                        <td><button class="btn btn-sm btn-success" onclick="startQuiz(2)">
+                                            <i class="bi bi-play-circle"></i> Start
+                                        </button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Data Structures Test</strong></td>
+                                        <td>Data Structures</td>
+                                        <td>Prof. Ramesh Jana</td>
+                                        <td>February 20, 2024</td>
+                                        <td>February 28, 2024</td>
+                                        <td>60 minutes</td>
+                                        <td>25 questions</td>
+                                        <td><span class="badge bg-danger">Not Attempted</span></td>
+                                        <td><strong>-</strong></td>
+                                        <td><button class="btn btn-sm btn-primary" onclick="startQuiz(3)">
+                                            <i class="bi bi-play-circle"></i> Start
+                                        </button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Algorithm Analysis Quiz</strong></td>
+                                        <td>Algorithms</td>
+                                        <td>Prof. John Cena</td>
+                                        <td>March 5, 2024</td>
+                                        <td>March 15, 2024</td>
+                                        <td>40 minutes</td>
+                                        <td>18 questions</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                        <td><strong>92%</strong></td>
+                                        <td><button class="btn btn-sm btn-outline-primary" onclick="viewQuizDetails(4)">
+                                            <i class="bi bi-eye"></i> View
+                                        </button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Test Section -->
+        <div id="assignments-section" class="content-section">
+            <h2 class="section-title">
+                <i class="bi bi-clipboard-check"></i>
+                Quiz Test
+            </h2>
+            
+            <div class="text-center py-5">
+                <div class="coming-soon-card">
+                    <div class="coming-soon-icon">
+                        <i class="bi bi-clock-history display-1"></i>
+                    </div>
+                    <h3 class="coming-soon-title">Coming Soon</h3>
+                    <p class="coming-soon-text">Quiz test functionality will be available soon. This feature will allow you to:</p>
+                    <ul class="coming-soon-features">
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> Take online quizzes for your subjects</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> View quiz results and scores</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> Track quiz performance over time</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> Access quiz history and analytics</li>
+                    </ul>
+                    <div class="coming-soon-footer">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            We're working hard to bring you the best quiz experience!
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5 class="mb-3">Current Assignments</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Assignment Title</th>
+                                        <th>Subject</th>
+                                        <th>Assigned Date</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Marks</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Database Design Project</strong></td>
+                                        <td>Database Systems</td>
+                                        <td>March 1, 2024</td>
+                                        <td>March 15, 2024</td>
+                                        <td><span class="badge bg-warning">In Progress</span></td>
+                                        <td>50</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary">
+                                                <i class="bi bi-pencil"></i> Submit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Network Configuration Lab</strong></td>
+                                        <td>Computer Networks</td>
+                                        <td>March 5, 2024</td>
+                                        <td>March 12, 2024</td>
+                                        <td><span class="badge bg-success">Submitted</span></td>
+                                        <td>45</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-info">
+                                                <i class="bi bi-eye"></i> View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Web Development Assignment</strong></td>
+                                        <td>Web Technologies</td>
+                                        <td>March 8, 2024</td>
+                                        <td>March 10, 2024</td>
+                                        <td><span class="badge bg-danger">Overdue</span></td>
+                                        <td>30</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-warning">
+                                                <i class="bi bi-exclamation-triangle"></i> Late Submit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Algorithm Analysis Report</strong></td>
+                                        <td>Data Structures</td>
+                                        <td>March 10, 2024</td>
+                                        <td>March 20, 2024</td>
+                                        <td><span class="badge bg-secondary">Not Started</span></td>
+                                        <td>40</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary">
+                                                <i class="bi bi-pencil"></i> Start
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5 class="mb-3">Assignment Statistics</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">Assignment Completion Rate</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="assignmentCompletionChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">Subject-wise Distribution</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="subjectDistributionChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Student data object - populated by Django template
+        window.studentData = {
+            semester: "{{ student.semester|default:'0' }}",
+            tenthPercentage: parseFloat("{{ student.tenth_percentage|default:0 }}") || 0,
+            twelfthPercentage: parseFloat("{{ student.twelfth_percentage|default:0 }}") || 0,
+            graduationPercentage: parseFloat("{{ student.graduation_percentage|default:0 }}") || 0
+        };
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+        });
+
+        function initializeCharts() {
+            // Get student data from global object
+            const currentSemester = window.studentData.semester;
+            const tenthPercentage = window.studentData.tenthPercentage;
+            const twelfthPercentage = window.studentData.twelfthPercentage;
+            const graduationPercentage = window.studentData.graduationPercentage;
+            
+            // Calculate completion percentage
+            let completionPercentage = 0;
+            if (currentSemester === "1") completionPercentage = 12.5;
+            else if (currentSemester === "2") completionPercentage = 25;
+            else if (currentSemester === "3") completionPercentage = 37.5;
+            else if (currentSemester === "4") completionPercentage = 50;
+            else if (currentSemester === "5") completionPercentage = 62.5;
+            else if (currentSemester === "6") completionPercentage = 75;
+            else if (currentSemester === "7") completionPercentage = 87.5;
+            else if (currentSemester === "8") completionPercentage = 100;
+            
+            // Academic Performance Chart in Profile Section
+            const academicPerformanceCtx = document.getElementById('academicPerformanceChart');
+            if (academicPerformanceCtx) {
+                // Prepare data for the chart
+                const educationData = [];
+                const educationLabels = [];
+                
+                if (tenthPercentage > 0) {
+                    educationData.push(tenthPercentage);
+                    educationLabels.push('10th Grade');
+                }
+                if (twelfthPercentage > 0) {
+                    educationData.push(twelfthPercentage);
+                    educationLabels.push('12th Grade');
+                }
+                if (graduationPercentage > 0) {
+                    educationData.push(graduationPercentage);
+                    educationLabels.push('Graduation');
+                }
+                
+                // If no educational data, show placeholder
+                if (educationData.length === 0) {
+                    educationData.push(0);
+                    educationLabels.push('No Data Available');
+                }
+                
+                new Chart(academicPerformanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: educationLabels,
+                        datasets: [{
+                            label: 'Percentage (%)',
+                            data: educationData,
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 206, 86, 0.8)',
+                                'rgba(75, 192, 192, 0.8)',
+                                'rgba(153, 102, 255, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Educational Performance History'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed.y + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 1. Progress Pie Chart - Enhanced with animations and better colors
+            const progressCtx = document.getElementById('progressChart');
+            if (progressCtx) {
+                new Chart(progressCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Completed', 'Remaining'],
+                        datasets: [{
+                            data: [completionPercentage, 100 - completionPercentage],
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(233, 236, 239, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(102, 126, 234, 1)',
+                                'rgba(206, 212, 218, 1)'
+                            ],
+                            borderWidth: 2,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            animateRotate: true,
+                            animateScale: true,
+                            duration: 2000,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    font: {
+                                        size: 12,
+                                        family: 'Segoe UI'
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Course Completion: ' + completionPercentage + '%',
+                                font: {
+                                    size: 16,
+                                    weight: '600',
+                                    family: 'Segoe UI'
+                                },
+                                padding: {
+                                    top: 10,
+                                    bottom: 30
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(102, 126, 234, 0.5)',
+                                borderWidth: 1,
+                                cornerRadius: 8,
+                                displayColors: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed + '%';
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '65%',
+                        rotation: -90,
+                        circumference: 360
+                    }
+                });
+            }
+            
+            // 2. Subject Performance Chart - Real data from quizzes and subjects
+            const performanceCtx = document.getElementById('performanceChart');
+            if (performanceCtx) {
+                // Get real data from Django template as JSON
+                const subjects = {{ subjects_json|safe }};
+                const attemptedQuizzes = {{ attempted_quizzes_json|safe }};
+                
+                // Process subject performance data
+                const subjectLabels = [];
+                const subjectScores = [];
+                const subjectColors = [];
+                
+                if (subjects && subjects.length > 0) {
+                    subjects.forEach(subject => {
+                        subjectLabels.push(subject.subject_name);
+                        
+                        // Find quiz scores for this subject
+                        let subjectScore = 0;
+                        let quizCount = 0;
+                        
+                        if (attemptedQuizzes && attemptedQuizzes.length > 0) {
+                            attemptedQuizzes.forEach(quiz => {
+                                if (quiz.subject === subject.subject_name && quiz.percentage) {
+                                    subjectScore += quiz.percentage;
+                                    quizCount++;
+                                }
+                            });
+                        }
+                        
+                        // Calculate average or use default
+                        const avgScore = quizCount > 0 ? Math.round(subjectScore / quizCount) : 75;
+                        subjectScores.push(avgScore);
+                        
+                        // Generate colors based on performance
+                        if (avgScore >= 90) {
+                            subjectColors.push('rgba(40, 167, 69, 0.8)');
+                        } else if (avgScore >= 80) {
+                            subjectColors.push('rgba(102, 126, 234, 0.8)');
+                        } else if (avgScore >= 70) {
+                            subjectColors.push('rgba(255, 206, 86, 0.8)');
+                        } else {
+                            subjectColors.push('rgba(220, 53, 69, 0.8)');
+                        }
+                    });
+                } else {
+                    // Fallback data if no subjects
+                    subjectLabels.push('No Data');
+                    subjectScores.push(0);
+                    subjectColors.push('rgba(108, 117, 125, 0.8)');
+                }
+                
+                new Chart(performanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: subjectLabels,
+                        datasets: [{
+                            label: 'Average Score (%)',
+                            data: subjectScores,
+                            backgroundColor: subjectColors,
+                            borderColor: subjectColors.map(color => color.replace('0.8', '1')),
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            hoverBackgroundColor: subjectColors.map(color => color.replace('0.8', '1')),
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                let delay = 0;
+                                if (context.type === 'data' && context.mode === 'default') {
+                                    delay = context.dataIndex * 200;
+                                }
+                                return delay;
+                            },
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    },
+                                    font: {
+                                        size: 11,
+                                        family: 'Segoe UI'
+                                    },
+                                    color: '#6c757d'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 11,
+                                        family: 'Segoe UI'
+                                    },
+                                    color: '#6c757d'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Subject Performance',
+                                font: {
+                                    size: 16,
+                                    weight: '600',
+                                    family: 'Segoe UI'
+                                },
+                                padding: {
+                                    top: 10,
+                                    bottom: 30
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(102, 126, 234, 0.5)',
+                                borderWidth: 1,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        const score = context.parsed.y;
+                                        let performance = '';
+                                        if (score >= 90) performance = ' (Excellent)';
+                                        else if (score >= 80) performance = ' (Good)';
+                                        else if (score >= 70) performance = ' (Average)';
+                                        else performance = ' (Needs Improvement)';
+                                        return 'Score: ' + score + '%' + performance;
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                });
+            }
+            
+            // 3. Semester-wise Progress Line Chart - Enhanced
+            const semesterCtx = document.getElementById('semesterChart');
+            if (semesterCtx) {
+                const semesterLabels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
+                const semesterData = [12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100];
+                const currentSemIndex = parseInt(currentSemester) - 1;
+                
+                new Chart(semesterCtx, {
+                    type: 'line',
+                    data: {
+                        labels: semesterLabels,
+                        datasets: [{
+                            label: 'Expected Progress',
+                            data: semesterData,
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }, {
+                            label: 'Current Status',
+                            data: semesterLabels.map(function(_, index) {
+                                return index <= currentSemIndex ? semesterData[index] : null;
+                            }),
+                            borderColor: 'rgba(118, 75, 162, 1)',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: 'rgba(118, 75, 162, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointStyle: 'circle'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 2500,
+                            easing: 'easeInOutQuart'
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    },
+                                    font: {
+                                        size: 11,
+                                        family: 'Segoe UI'
+                                    },
+                                    color: '#6c757d'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 11,
+                                        family: 'Segoe UI'
+                                    },
+                                    color: '#6c757d'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Semester-wise Academic Progress',
+                                font: {
+                                    size: 16,
+                                    weight: '600',
+                                    family: 'Segoe UI'
+                                },
+                                padding: {
+                                    top: 10,
+                                    bottom: 30
+                                }
+                            },
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    font: {
+                                        size: 12,
+                                        family: 'Segoe UI'
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(102, 126, 234, 0.5)',
+                                borderWidth: 1,
+                                cornerRadius: 8,
+                                displayColors: true,
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed.y + '%';
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                });
+            }
+            
+            // 4. Assignment Completion Chart
+            const assignmentCompletionCtx = document.getElementById('assignmentCompletionChart');
+            if (assignmentCompletionCtx) {
+                new Chart(assignmentCompletionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Completed', 'Pending', 'Overdue'],
+                        datasets: [{
+                            data: [8, 4, 2],
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(255, 206, 86, 0.8)',
+                                'rgba(220, 53, 69, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(40, 167, 69, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(220, 53, 69, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Assignment Status Overview'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 5. Subject Distribution Chart
+            const subjectDistributionCtx = document.getElementById('subjectDistributionChart');
+            if (subjectDistributionCtx) {
+                new Chart(subjectDistributionCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Computer Networks', 'Database Systems', 'Web Technologies', 'Data Structures'],
+                        datasets: [{
+                            data: [3, 2, 4, 3],
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 206, 86, 0.8)',
+                                'rgba(75, 192, 192, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(102, 126, 234, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Assignments by Subject'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all menu items
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            const selectedSection = document.getElementById(sectionName + '-section');
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            }
+            
+            // Add active class to clicked menu item
+            event.target.closest('.menu-item').classList.add('active');
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.querySelector('.toggle-btn');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            toggleBtn.classList.toggle('collapsed');
+        }
+
+        // Close sidebar on mobile when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.querySelector('.toggle-btn');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !toggleBtn.contains(event.target) &&
+                sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Handle mobile menu
+        if (window.innerWidth <= 768) {
+            document.querySelector('.toggle-btn').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('show');
+            });
+        }
+
+        // Library Functions
+        let allPdfs = [];
+        let myIssues = [];
+
+        // Load library data when library section is shown
+        function loadLibraryData() {
+            loadAvailablePdfs();
+            loadMyIssues();
+        }
+
+        // Load available PDFs for student
+        function loadAvailablePdfs() {
+            fetch('/dashboard/get-pdfs/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        allPdfs = data.pdfs;
+                        displayPdfs(allPdfs);
+                        updateLibraryStats();
+                    } else {
+                        document.getElementById('pdfsList').innerHTML = 
+                            '<div class="alert alert-danger">' + data.message + '</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading PDFs:', error);
+                    document.getElementById('pdfsList').innerHTML = 
+                        '<div class="alert alert-danger">Error loading PDFs</div>';
+                });
+        }
+
+        // Load student's issued books
+        function loadMyIssues() {
+            fetch('/library/get-issues/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        myIssues = data.issues;
+                        displayIssues(myIssues);
+                    } else {
+                        document.getElementById('issuesList').innerHTML = 
+                            '<div class="alert alert-danger">' + data.message + '</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading issues:', error);
+                    document.getElementById('issuesList').innerHTML = 
+                        '<div class="alert alert-danger">Error loading issued books</div>';
+                });
+        }
+
+        // Display PDFs in student section
+        function displayPdfs(pdfs) {
+            const pdfsList = document.getElementById('pdfsList');
+            pdfsList.innerHTML = '';
+            
+            if (pdfs.length === 0) {
+                pdfsList.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                        <p>No PDFs available for download</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Filter PDFs based on student's branch and semester
+            const filteredPdfs = filterPdfsForStudent(pdfs);
+            
+            const table = document.createElement('table');
+            table.className = 'table table-striped table-hover';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Branch</th>
+                        <th>Semester</th>
+                        <th>Upload Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+            
+            filteredPdfs.forEach(pdf => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                            <div>
+                                <strong>${pdf.title}</strong>
+                                <br>
+                                <small class="text-muted">${pdf.file_size || 'N/A'}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${pdf.description || 'No description'}</td>
+                    <td>
+                        <span class="badge bg-primary">${pdf.branch || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-success">Sem ${pdf.semester || 'N/A'}</span>
+                    </td>
+                    <td>${pdf.upload_date}</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" onclick="downloadPdf('${pdf.file_path}')">
+                            <i class="bi bi-download"></i> Download
+                        </button>
+                    </td>
+                `;
+                table.querySelector('tbody').appendChild(row);
+            });
+            
+            pdfsList.appendChild(table);
+        }
+
+        // Filter PDFs based on student's branch and semester
+        function filterPdfsForStudent(pdfs) {
+            // Get student's branch and semester from the page
+            const studentBranch = '{{ student.department|escapejs }}';
+            const studentSemester = '{{ student.semester|escapejs }}';
+            
+            // Filter PDFs that match student's branch and semester
+            return pdfs.filter(pdf => {
+                const matchesBranch = !studentBranch || pdf.branch === studentBranch;
+                const matchesSemester = !studentSemester || pdf.semester === studentSemester;
+                return matchesBranch && matchesSemester;
+            });
+        }
+
+        // Download PDF
+        function downloadPdf(filePath) {
+            // Ensure the path is properly formatted for browser
+            const downloadUrl = filePath.startsWith('/') ? filePath : '/' + filePath;
+            window.open(downloadUrl, '_blank');
+        }
+
+        // Search PDFs
+        document.getElementById('pdfSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredPdfs = allPdfs.filter(pdf => 
+                pdf.title.toLowerCase().includes(searchTerm) ||
+                pdf.description.toLowerCase().includes(searchTerm)
+            );
+            displayPdfs(filteredPdfs);
+        });
+
+        // Update library stats
+        function updateLibraryStats() {
+            const issuedCount = myIssues.filter(issue => issue.status === 'issued').length;
+            const overdueCount = myIssues.filter(issue => issue.status === 'overdue').length;
+            const availablePdfsCount = filterPdfsForStudent(allPdfs).length;
+            
+            // Update stats cards if they exist
+            const booksIssuedCard = document.querySelector('.info-card:nth-child(2) p strong');
+            const dueDateCard = document.querySelector('.info-card:nth-child(3) p strong');
+            
+            if (booksIssuedCard) {
+                booksIssuedCard.textContent = issuedCount;
+            }
+            
+            if (dueDateCard) {
+                if (issuedCount > 0) {
+                    const dueIssues = myIssues.filter(issue => issue.status === 'issued');
+                    if (dueIssues.length > 0) {
+                        const nextDue = new Date(dueIssues[0].due_date).toLocaleDateString();
+                        dueDateCard.textContent = nextDue;
+                    } else {
+                        dueDateCard.textContent = 'No due dates';
+                    }
+                } else {
+                    dueDateCard.textContent = 'No books issued';
+                }
+            }
+            
+            // Update PDF count in the Available PDFs section
+            const pdfsSection = document.querySelector('#library-section h5.mb-3');
+            if (pdfsSection && availablePdfsCount !== allPdfs.length) {
+                pdfsSection.innerHTML = `Available PDFs for your branch/semester <span class="badge bg-info">${availablePdfsCount}</span>`;
+            }
+        }
+
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Override showSection to load library data when library section is shown
+        const originalShowSection = showSection;
+        showSection = function(sectionName) {
+            originalShowSection.call(this, sectionName);
+            
+            if (sectionName === 'library') {
+                loadLibraryData();
+            }
+        };
+
+        // Quiz Functions
+        function startQuiz(quizId) {
+            // Confirm before starting quiz
+            if (confirm('Are you ready to start this quiz? Once started, the timer will begin immediately.')) {
+                // Create quiz attempt
+                fetch(`/quiz/start/${quizId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('Quiz started successfully! Redirecting to quiz page...', 'success');
+                        // Redirect to quiz page
+                        setTimeout(() => {
+                            window.location.href = `/quiz/take/${data.attempt_id}/`;
+                        }, 1500);
+                    } else {
+                        showAlert(data.message || 'Error starting quiz', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error starting quiz:', error);
+                    showAlert('Error starting quiz. Please try again.', 'danger');
+                });
+            }
+        }
+
+        function continueQuiz(attemptId) {
+            if (confirm('Continue your quiz attempt? The timer will resume from where you left off.')) {
+                // Redirect to quiz page
+                window.location.href = `/quiz/take/${attemptId}/`;
+            }
+        }
+
+        function viewQuizResults(attemptId) {
+            // Redirect to results page
+            window.location.href = `/quiz/results/${attemptId}/`;
+        }
+    </script>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title"><i class="bi bi-key me-2"></i>Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                            <div class="form-text">Password must be at least 8 characters long</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" onclick="updatePassword()">
+                        <i class="bi bi-key me-1"></i>Change Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password change functions
+        function changePassword() {
+            try {
+                // Check if Bootstrap is loaded
+                if (typeof bootstrap === 'undefined') {
+                    console.error('Bootstrap is not loaded');
+                    alert('Error: Bootstrap library not loaded. Please refresh the page.');
+                    return;
+                }
+                
+                // Check if modal element exists
+                const modalElement = document.getElementById('changePasswordModal');
+                if (!modalElement) {
+                    console.error('Modal element not found');
+                    alert('Error: Password change modal not found. Please refresh the page.');
+                    return;
+                }
+                
+                // Show password change modal
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+                
+                console.log('Password change modal opened successfully');
+            } catch (error) {
+                console.error('Error opening password modal:', error);
+                alert('Error opening password change dialog. Please refresh the page and try again.');
+            }
+        }
+
+        function updatePassword() {
+            try {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                // Validation
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    showAlert('Please fill all password fields', 'warning');
+                    return;
+                }
+
+                if (newPassword.length < 8) {
+                    showAlert('New password must be at least 8 characters long', 'warning');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    showAlert('New password and confirm password do not match', 'warning');
+                    return;
+                }
+
+                // Send password change request to server
+                const formData = new FormData();
+                formData.append('current_password', currentPassword);
+                formData.append('new_password', newPassword);
+
+                fetch('/change-password/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('Password changed successfully!', 'success');
+                        
+                        // Close modal and reset form
+                        const modalElement = document.getElementById('changePasswordModal');
+                        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                        document.getElementById('changePasswordForm').reset();
+                        
+                        console.log('Password change completed successfully');
+                    } else {
+                        showAlert(data.message || 'Error changing password', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error changing password:', error);
+                    showAlert('Error changing password. Please try again.', 'danger');
+                });
+                
+            } catch (error) {
+                console.error('Error updating password:', error);
+                showAlert('Error changing password. Please try again.', 'danger');
+            }
+        }
+
+        // Quiz Functions
+        function viewQuizDetails(quizId) {
+            // In a real application, this would fetch quiz details from server
+            showAlert(`Viewing details for Quiz ID: ${quizId}`, 'info');
+            console.log('View quiz details:', quizId);
+        }
+
+        
+        // Alert function for user feedback
+        function showAlert(message, type) {
+            try {
+                // Create alert element
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+                alertDiv.style.zIndex = '9999';
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                document.body.appendChild(alertDiv);
+                
+                // Auto remove after 3 seconds
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 3000);
+            } catch (error) {
+                console.error('Error showing alert:', error);
+                // Fallback to regular alert
+                alert(message);
+            }
+        }
+
+        // Debug function to check if everything is loaded
+        function debugPasswordChange() {
+            console.log('Bootstrap loaded:', typeof bootstrap !== 'undefined');
+            console.log('Modal element exists:', !!document.getElementById('changePasswordModal'));
+            console.log('changePassword function exists:', typeof changePassword === 'function');
+        }
+
+        // Function to fetch and populate session options
+        function loadSessions() {
+            fetch('/scrape-bput-sessions/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const sessionSelect = document.getElementById('session-select');
+                        sessionSelect.innerHTML = '<option value="">Select a session...</option>';
+                        
+                        // Find the session select from scraped data
+                        data.data.forEach(selectElement => {
+                            if (selectElement.select_name.toLowerCase().includes('session') || 
+                                selectElement.select_name.toLowerCase().includes('semester')) {
+                                selectElement.options.forEach(option => {
+                                    if (option.text && option.text.trim()) {
+                                        const optionElement = document.createElement('option');
+                                        optionElement.value = option.value || option.text;
+                                        optionElement.textContent = option.text;
+                                        
+                                        // Set default selection if it matches the current value
+                                        if (option.text.includes('Odd-(2025-26)')) {
+                                            optionElement.selected = true;
+                                        }
+                                        
+                                        sessionSelect.appendChild(optionElement);
+                                    }
+                                });
+                            }
+                        });
+                        
+                        // If no session options found, add default
+                        if (sessionSelect.options.length <= 1) {
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = 'Odd-(2025-26)';
+                            defaultOption.textContent = 'Odd-(2025-26)';
+                            defaultOption.selected = true;
+                            sessionSelect.appendChild(defaultOption);
+                        }
+                    } else {
+                        console.error('Failed to load sessions:', data.message);
+                        // Fallback to default option
+                        const sessionSelect = document.getElementById('session-select');
+                        sessionSelect.innerHTML = '<option value="Odd-(2025-26)" selected>Odd-(2025-26)</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading sessions:', error);
+                    // Fallback to default option
+                    const sessionSelect = document.getElementById('session-select');
+                    sessionSelect.innerHTML = '<option value="Odd-(2025-26)" selected>Odd-(2025-26)</option>';
+                });
+        }
+
+        // Function to check result
+        function checkResult() {
+            const session = document.getElementById('session-select').value;
+            const regNo = document.getElementById('reg-no-input').value;
+            const dob = document.getElementById('dob-input').value;
+            
+            // Validation
+            if (!session) {
+                showAlert('Please select a session', 'warning');
+                return;
+            }
+            
+            if (!regNo || regNo.trim() === '') {
+                showAlert('Please enter your registration number', 'warning');
+                return;
+            }
+            
+            if (!dob) {
+                showAlert('Please select your date of birth', 'warning');
+                return;
+            }
+            
+            // Show loading state
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Checking...';
+            button.disabled = true;
+            
+            // Prepare form data for BPUT submission
+            const formData = {
+                session: session,
+                regNo: regNo.trim(),
+                dob: dob
+            };
+            
+            console.log('Checking result with data:', formData);
+            
+            // Submit to BPUT website to get actual result
+            fetch('/get-bput-result/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken') // Add CSRF token if needed
+                },
+                body: new URLSearchParams({
+                    'session': session,
+                    'regNo': regNo.trim(),
+                    'dob': dob
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                if (data.success) {
+                    if (data.data && typeof data.data === 'object') {
+                        // Parse and display the actual result data
+                        displayBputResult(data.data);
+                        showAlert('Result fetched successfully from BPUT!', 'success');
+                    } else if (data.html_content) {
+                        // If HTML content is returned, show it for debugging
+                        showHtmlResult(data.html_content);
+                        showAlert('Result HTML fetched (parsing needed)', 'info');
+                    } else {
+                        showAlert('Unknown result format received', 'warning');
+                    }
+                } else {
+                    showAlert(data.message || 'Failed to fetch result', 'error');
+                }
+            })
+            .catch(error => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                console.error('Error fetching result:', error);
+                showAlert('Error fetching result. Please try again.', 'error');
+            });
+        }
+
+        // Function to display result in the result card
+        function displayResult(resultData) {
+            const resultCard = document.getElementById('result-card');
+            const resultContent = document.getElementById('result-content');
+            
+            // Generate HTML for result display
+            const resultHtml = `
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Student Name:</strong> ${resultData.studentName}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Registration No:</strong> ${resultData.regNo}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Session:</strong> ${resultData.session}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Semester:</strong> ${resultData.semester}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Course:</strong> ${resultData.course}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Status:</strong> 
+                        <span class="badge bg-${resultData.status === 'PASS' ? 'success' : 'danger'} fs-6">
+                            ${resultData.status}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="text-primary">SGPA</h5>
+                                <h3>${resultData.sgpa}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="text-primary">CGPA</h5>
+                                <h3>${resultData.cgpa}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="mb-3"><strong>Subject-wise Details:</strong></h6>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>Type</th>
+                                <th>Credits</th>
+                                <th>Grade</th>
+                                <th>Points</th>
+                                <th>Credit Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${resultData.subjects.map(subject => `
+                                <tr>
+                                    <td><small>${subject.code}</small></td>
+                                    <td>${subject.name}</td>
+                                    <td><span class="badge bg-secondary">${subject.type}</span></td>
+                                    <td>${subject.credits}</td>
+                                    <td>
+                                        <span class="badge bg-${getGradeColor(subject.grade)} fs-6">
+                                            ${subject.grade}
+                                        </span>
+                                    </td>
+                                    <td>${subject.points}</td>
+                                    <td>${subject.creditPoints}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            resultContent.innerHTML = resultHtml;
+            resultCard.style.display = 'block';
+            
+            // Scroll to result card
+            resultCard.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Helper function to get color based on grade
+        function getGradeColor(grade) {
+            const gradeColors = {
+                'A': 'success',
+                'A+': 'success',
+                'A-': 'info',
+                'B+': 'info',
+                'B': 'primary',
+                'B-': 'primary',
+                'C+': 'warning',
+                'C': 'warning',
+                'C-': 'warning',
+                'D': 'danger',
+                'F': 'danger'
+            };
+            return gradeColors[grade] || 'secondary';
+        }
+
+        // Function to parse and display BPUT result data
+        function displayBputResult(bputData) {
+            console.log('BPUT Data received:', bputData);
+            
+            // Parse real BPUT response structure
+            const grades = bputData.grades || [];
+            const sgpaDetails = bputData.sgpadetails || {};
+            
+            // Extract student info from first subject (all have same rollNo)
+            const studentInfo = grades[0] || {};
+            
+            // Get actual student name and department from the page (from Django template)
+            const studentFirstName = "{{ student.first_name|escapejs }}";
+            const studentLastName = "{{ student.last_name|escapejs }}";
+            const studentDepartment = "{{ student.department|escapejs }}";
+            const fullName = `${studentFirstName} ${studentLastName}`.trim();
+            
+            const resultData = {
+                studentName: fullName || 'Student Name',
+                regNo: studentInfo.rollNo || document.getElementById('reg-no-input').value,
+                session: document.getElementById('session-select').value,
+                semester: `${studentInfo.semester} Semester`,
+                course: studentInfo.branchName || studentDepartment || 'Not specified',
+                sgpa: sgpaDetails.sgpa || '0.0',
+                cgpa: 'N/A', // BPUT response doesn't include CGPA
+                status: 'PASS', // Determine from grades
+                subjects: grades.map(subject => ({
+                    name: subject.subjectName || 'Unknown Subject',
+                    code: subject.subjectCODE || '',
+                    type: subject.subjectTP || '',
+                    credits: subject.subjectCredits || 0,
+                    grade: subject.grade || 'N/A',
+                    points: subject.points || 0,
+                    creditPoints: subject.creditPoints || 0
+                }))
+            };
+            
+            // Determine overall status based on grades
+            const hasFailGrades = grades.some(subject => subject.grade === 'F');
+            resultData.status = hasFailGrades ? 'FAIL' : 'PASS';
+            
+            displayResult(resultData);
+        }
+
+        // Function to display raw HTML result (for debugging)
+        function showHtmlResult(htmlContent) {
+            const resultCard = document.getElementById('result-card');
+            const resultContent = document.getElementById('result-content');
+            
+            resultContent.innerHTML = `
+                <div class="alert alert-info">
+                    <h6><i class="bi bi-info-circle me-2"></i>Raw HTML Response</h6>
+                    <p class="mb-2">The BPUT server returned HTML content that needs to be parsed.</p>
+                    <details>
+                        <summary>View Raw HTML</summary>
+                        <pre class="mt-2 p-3 bg-light border" style="max-height: 400px; overflow-y: auto;">${htmlContent}</pre>
+                    </details>
+                </div>
+            `;
+            
+            resultCard.style.display = 'block';
+            resultCard.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Enhanced UI Interactions and Milestone Celebrations
+        function celebrateMilestone(title, message) {
+            // Create celebration popup
+            const celebration = document.createElement('div');
+            celebration.className = 'milestone-celebration';
+            celebration.innerHTML = `
+                <h3>🎉 ${title}</h3>
+                <p>${message}</p>
+            `;
+            document.body.appendChild(celebration);
+            
+            // Create confetti effect
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = ['#667eea', '#764ba2', '#28a745', '#ffce56', '#dc3545'][Math.floor(Math.random() * 5)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+            
+            // Remove celebration after 3 seconds
+            setTimeout(() => celebration.remove(), 3000);
+        }
+        
+        // Interactive chart data points - DISABLED to prevent clutter
+        function addInteractiveDataPoints() {
+            // Disabled to prevent data points from appearing everywhere
+            // If needed, this can be re-enabled with specific chart targeting
+            console.log('Interactive data points disabled to prevent UI clutter');
+        }
+        
+        // Progress ring animation
+        function createProgressRing(percentage) {
+            const ringHTML = `
+                <div class="progress-ring">
+                    <svg width="120" height="120">
+                        <circle class="progress-ring-circle" cx="60" cy="60" r="54"></circle>
+                        <circle class="progress-ring-progress" cx="60" cy="60" r="54"
+                                style="stroke-dashoffset: ${339.292 - (339.292 * percentage / 100)}"></circle>
+                    </svg>
+                    <div class="progress-ring-text">${percentage}%</div>
+                </div>
+            `;
+            return ringHTML;
+        }
+        
+        // Skeleton loading states
+        function showSkeletonLoading() {
+            const chartContainers = document.querySelectorAll('.chart-container');
+            chartContainers.forEach(container => {
+                const canvas = container.querySelector('canvas');
+                if (canvas) {
+                    const skeleton = document.createElement('div');
+                    skeleton.className = 'skeleton skeleton-chart';
+                    canvas.style.display = 'none';
+                    canvas.parentNode.insertBefore(skeleton, canvas);
+                    
+                    // Remove skeleton after charts load
+                    setTimeout(() => {
+                        skeleton.remove();
+                        canvas.style.display = 'block';
+                    }, 1500);
+                }
+            });
+        }
+        
+        // Enhanced chart interactions
+        function enhanceChartInteractions() {
+            // Add ripple effect to stat cards
+            const statCards = document.querySelectorAll('.progress-stat-card');
+            statCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    const ripple = document.createElement('div');
+                    ripple.style.position = 'absolute';
+                    ripple.style.width = '20px';
+                    ripple.style.height = '20px';
+                    ripple.style.background = 'rgba(255,255,255,0.5)';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.transform = 'translate(-50%, -50%)';
+                    ripple.style.pointerEvents = 'none';
+                    ripple.style.animation = 'ripple 0.6s ease-out';
+                    
+                    const rect = card.getBoundingClientRect();
+                    ripple.style.left = (e.clientX - rect.left) + 'px';
+                    ripple.style.top = (e.clientY - rect.top) + 'px';
+                    
+                    card.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+            
+            // Add hover sound effect (optional)
+            const chartContainers = document.querySelectorAll('.chart-container');
+            chartContainers.forEach(container => {
+                container.addEventListener('mouseenter', function() {
+                    // Add visual feedback
+                    this.style.transform = 'translateY(-5px) scale(1.01)';
+                });
+                
+                container.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        }
+        
+        // Check for milestones and celebrate
+        function checkMilestones() {
+            const currentSemester = '{{ student.semester|default:"0" }}';
+            const completionPercentage = parseInt(document.querySelector('.stat-value')?.textContent || '0');
+            
+            // Milestone celebrations
+            if (currentSemester === '4') {
+                celebrateMilestone('Halfway There!', "You've completed 50% of your academic journey!");
+            } else if (currentSemester === '8') {
+                celebrateMilestone('🎓 Graduate!', 'Congratulations! You have completed your course!');
+            } else if (completionPercentage >= 75 && completionPercentage < 100) {
+                celebrateMilestone('Excellent Progress!', 'You are doing great in your academic journey!');
+            }
+        }
+        
+        // Add CSS for ripple animation
+        const rippleCSS = `
+            @keyframes ripple {
+                to {
+                    transform: translate(-50%, -50%) scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = rippleCSS;
+        document.head.appendChild(styleSheet);
+
+        // Run debug on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(debugPasswordChange, 1000);
+            
+            // Load sessions when exams section is shown
+            const examsLink = document.querySelector('a[onclick*="showSection(\'exams\')"]');
+            if (examsLink) {
+                examsLink.addEventListener('click', function() {
+                    setTimeout(loadSessions, 500); // Load sessions after section is visible
+                });
+            }
+            
+            // Initialize enhanced features
+            setTimeout(() => {
+                showSkeletonLoading();
+                addInteractiveDataPoints();
+                enhanceChartInteractions();
+                checkMilestones();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

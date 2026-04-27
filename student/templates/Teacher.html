@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Student 360 Platform</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #667eea, #764ba2);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .dashboard-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .dashboard-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .form-section h2 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-section h2 i {
+            color: #667eea;
+            margin-right: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .teachers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .teacher-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .teacher-card h5 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .teacher-info {
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .teacher-info i {
+            color: #667eea;
+            margin-right: 8px;
+            width: 20px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1><i class="bi bi-person-workspace me-3"></i>Teacher Dashboard</h1>
+            <div class="subtitle">Student 360 Platform - Manage Teacher Information</div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <h3>{{ teachers|length }}</h3>
+                <p><i class="bi bi-people-fill me-2"></i>Total Teachers</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ teachers|length|add:"5" }}</h3>
+                <p><i class="bi bi-building me-2"></i>Departments</p>
+            </div>
+            <div class="stat-card">
+                <h3>1500+</h3>
+                <p><i class="bi bi-mortarboard-fill me-2"></i>Students</p>
+            </div>
+        </div>
+
+        <!-- Add New Teacher Form -->
+        <div class="form-section">
+            <h2><i class="bi bi-person-plus-fill"></i>Add New Teacher</h2>
+            
+            <form method="POST" action="{% url 'teacher_add' %}">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">
+                                <i class="bi bi-person me-1"></i>First Name
+                            </label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">
+                                <i class="bi bi-person me-1"></i>Last Name
+                            </label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope me-1"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="teacherId" class="form-label">
+                                <i class="bi bi-badge me-1"></i>Teacher ID
+                            </label>
+                            <input type="text" class="form-control" id="teacherId" name="teacherId" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="subjects" class="form-label">
+                                <i class="bi bi-journal-text me-1"></i>Subject
+                            </label>
+                            <input type="text" class="form-control" id="subjects" name="subjects" placeholder="e.g., Mathematics, Physics" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="experience" class="form-label">
+                                <i class="bi bi-clock-history me-1"></i>Years of Experience
+                            </label>
+                            <input type="number" class="form-control" id="experience" name="experience" min="0" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="dob" class="form-label">
+                        <i class="bi bi-calendar me-1"></i>Date of Birth
+                    </label>
+                    <input type="date" class="form-control" id="dob" name="dob">
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-primary-custom">
+                        <i class="bi bi-check-circle me-2"></i>Add Teacher
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Existing Teachers List -->
+        <div class="form-section">
+            <h2><i class="bi bi-people-fill"></i>Existing Teachers</h2>
+            
+            {% if teachers %}
+                <div class="teachers-grid">
+                    {% for teacher in teachers %}
+                    <div class="teacher-card">
+                        <h5><i class="bi bi-person-badge me-2"></i>{{ teacher.first_name }} {{ teacher.last_name }}</h5>
+                        <div class="teacher-info">
+                            <i class="bi bi-badge"></i><strong>ID:</strong> {{ teacher.teacher_id }}
+                        </div>
+                        <div class="teacher-info">
+                            <i class="bi bi-envelope"></i><strong>Email:</strong> {{ teacher.email }}
+                        </div>
+                        <div class="teacher-info">
+                            <i class="bi bi-journal-text"></i><strong>Subject:</strong> {{ teacher.subject }}
+                        </div>
+                        <div class="teacher-info">
+                            <i class="bi bi-clock-history"></i><strong>Experience:</strong> {{ teacher.years_of_experience }} years
+                        </div>
+                        <div class="teacher-info">
+                            <i class="bi bi-calendar"></i><strong>Hire Date:</strong> {{ teacher.hire_date|date:"M d, Y" }}
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary me-2">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash me-1"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info alert-custom">
+                    <i class="bi bi-info-circle me-2"></i>
+                    No teachers found. Add your first teacher using the form above.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="form-section">
+            <h2><i class="bi bi-lightning-fill"></i>Quick Actions</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <button class="btn btn-outline-primary w-100 mb-2">
+                        <i class="bi bi-download me-2"></i>Export Data
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-outline-success w-100 mb-2">
+                        <i class="bi bi-upload me-2"></i>Import Teachers
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-outline-info w-100 mb-2">
+                        <i class="bi bi-printer me-2"></i>Print Reports
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100 mb-2">
+                        <i class="bi bi-house me-2"></i>Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

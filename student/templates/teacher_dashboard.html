@@ -1,0 +1,3442 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Teacher Dashboard - Student 360 Platform</title>
+
+    
+
+    <!-- Bootstrap 5 CSS -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Chart.js -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    
+
+    <style>
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+        }
+
+
+
+        body {
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            background: #f5f6fa;
+
+            overflow-x: hidden;
+
+        }
+
+
+
+        /* Sidebar Styles */
+
+        .sidebar {
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            height: 100vh;
+
+            width: 280px;
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+
+            z-index: 1000;
+
+            transition: all 0.3s ease;
+
+            overflow-y: auto;
+
+            overflow-x: hidden;
+
+        }
+
+
+
+        .sidebar.collapsed {
+
+            width: 80px;
+
+        }
+
+
+
+        .sidebar-header {
+
+            position: sticky;
+
+            top: 0;
+
+            padding: 20px;
+
+            text-align: center;
+
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+
+            background: rgba(255,255,255,0.05);
+
+        }
+
+
+
+        .logo-icon {
+
+            font-size: 2rem;
+
+            color: white;
+
+            margin-bottom: 10px;
+
+        }
+
+
+
+        .sidebar-header h3 {
+
+            color: white;
+
+            font-weight: 600;
+
+            margin: 0;
+
+            font-size: 1.2rem;
+
+        }
+
+
+
+        .sidebar.collapsed .sidebar-header h3 {
+
+            display: none;
+
+        }
+
+
+
+        /* Menu Styles */
+
+        .sidebar-menu {
+
+            padding: 20px 0;
+
+        }
+
+
+
+        .menu-item {
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 15px 25px;
+
+            color: rgba(255,255,255,0.8);
+
+            text-decoration: none;
+
+            transition: all 0.3s ease;
+
+            border-left: 3px solid transparent;
+
+            margin-bottom: 5px;
+
+        }
+
+
+
+        .menu-item:hover {
+
+            background: rgba(255,255,255,0.1);
+
+            color: white;
+
+            border-left-color: #fff;
+
+        }
+
+
+
+        .menu-item.active {
+
+            background: rgba(255,255,255,0.15);
+
+            color: white;
+
+            border-left-color: #fff;
+
+        }
+
+
+
+        .menu-item i {
+
+            font-size: 1.2rem;
+
+            margin-right: 15px;
+
+            min-width: 25px;
+
+        }
+
+
+
+        .sidebar.collapsed .menu-item span {
+
+            display: none;
+
+        }
+
+
+
+        .sidebar.collapsed .menu-item {
+
+            justify-content: center;
+
+            padding: 15px;
+
+        }
+
+
+
+        .sidebar.collapsed .menu-item i {
+
+            margin-right: 0;
+
+        }
+
+
+
+        /* Submenu Styles */
+
+        .submenu {
+
+            background: rgba(0,0,0,0.1);
+
+            max-height: 0;
+
+            overflow: hidden;
+
+            transition: max-height 0.3s ease;
+
+        }
+
+
+
+        .submenu.show {
+
+            max-height: 500px;
+
+        }
+
+
+
+        .submenu-item {
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 12px 25px 12px 50px;
+
+            color: rgba(255,255,255,0.7);
+
+            text-decoration: none;
+
+            transition: all 0.3s ease;
+
+            font-size: 0.9rem;
+
+        }
+
+
+
+        .submenu-item:hover {
+
+            background: rgba(255,255,255,0.05);
+
+            color: white;
+
+        }
+
+
+
+        .submenu-item i {
+
+            font-size: 1rem;
+
+            margin-right: 12px;
+
+            min-width: 20px;
+
+        }
+
+
+
+        .sidebar.collapsed .submenu {
+
+            display: none;
+
+        }
+
+
+
+        .dropdown-arrow {
+
+            transition: transform 0.3s ease;
+
+        }
+
+
+
+        .dropdown-arrow.rotated {
+
+            transform: rotate(180deg);
+
+        }
+
+
+
+        /* Main Content */
+
+        .main-content {
+
+            margin-left: 280px;
+
+            padding: 20px;
+
+            transition: margin-left 0.3s ease;
+
+        }
+
+
+
+        .main-content.expanded {
+
+            margin-left: 80px;
+
+        }
+
+
+
+        /* Header */
+
+        .content-header {
+
+            background: white;
+
+            padding: 20px 30px;
+
+            border-radius: 15px;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+            margin-bottom: 30px;
+
+            display: flex;
+
+            justify-content: between;
+
+            align-items: center;
+
+        }
+
+
+
+        .header-title h1 {
+
+            color: #2c3e50;
+
+            font-weight: 600;
+
+            margin: 0;
+
+            font-size: 1.8rem;
+
+        }
+
+
+
+        .header-title p {
+
+            color: #7f8c8d;
+
+            margin: 5px 0 0 0;
+
+        }
+
+
+
+        .header-actions {
+
+            display: flex;
+
+            gap: 10px;
+
+        }
+
+
+
+        /* Content Sections */
+
+        .content-section {
+
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 30px;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+            margin-bottom: 30px;
+
+            display: none;
+
+        }
+
+
+
+        .content-section.active {
+
+            display: block;
+
+        }
+
+
+
+        .page-title {
+
+            color: #2c3e50;
+
+            font-weight: 600;
+
+            margin-bottom: 10px;
+
+            font-size: 1.5rem;
+
+        }
+
+
+
+        .page-subtitle {
+
+            color: #7f8c8d;
+
+            margin-bottom: 25px;
+
+        }
+
+
+
+        /* Stats Cards */
+
+        .stats-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+
+        .stat-card {
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            color: white;
+
+            padding: 25px;
+
+            border-radius: 15px;
+
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+
+            transition: transform 0.3s ease;
+
+        }
+
+
+
+        .stat-card:hover {
+
+            transform: translateY(-5px);
+
+        }
+
+
+
+        .stat-card h3 {
+
+            font-size: 2rem;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+
+        }
+
+
+
+        .stat-card p {
+
+            margin: 0;
+
+            opacity: 0.9;
+
+        }
+
+
+
+        /* Toggle Button */
+
+        .sidebar-toggle {
+
+            position: relative;
+
+            top: auto;
+
+            left: auto;
+
+            z-index: auto;
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            color: white;
+
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 10px 13px;
+
+            cursor: pointer;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+
+            transition: all 0.3s ease;
+
+            margin-right: 15px;
+
+            flex-shrink: 0;
+
+        }
+
+
+
+        .sidebar-toggle:hover {
+
+            transform: scale(1.05);
+
+        }
+
+
+
+        /* Header layout with toggle button */
+
+        .main-content {
+
+            position: relative;
+
+        }
+
+        .header-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+
+        .content-header {
+
+            padding-left: 0;
+
+        }
+
+
+
+        /* Responsive */
+
+        @media (max-width: 768px) {
+
+            .sidebar {
+
+                transform: translateX(-100%);
+
+            }
+
+            
+
+            .sidebar.show {
+
+                transform: translateX(0);
+
+            }
+
+            
+
+            .main-content {
+
+                margin-left: 0;
+
+            }
+
+            
+
+            .sidebar-toggle {
+
+                left: 20px !important;
+
+                z-index: 1003;
+
+            }
+
+            
+
+            .content-header {
+
+                padding-left: 70px; /* Space for toggle button on mobile */
+
+            }
+
+        }
+
+
+
+        /* Table Styles */
+
+        .table-responsive {
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+        }
+
+
+
+        .table {
+
+            margin-bottom: 0;
+
+        }
+
+
+
+        .table thead th {
+
+            background: #f8f9fa;
+
+            border: none;
+
+            font-weight: 600;
+
+            color: #495057;
+
+        }
+
+
+
+        .table tbody tr:hover {
+
+            background: #f8f9fa;
+
+        }
+
+
+
+        /* Button Styles */
+
+        .btn-primary-custom {
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 10px 20px;
+
+            font-weight: 500;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .btn-primary-custom:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+    </style>
+
+</head>
+
+<body data-total-students="{{ total_students|default:0 }}" data-core-subjects="{{ core_subjects_count|default:0 }}" data-elective-subjects="{{ elective_subjects_count|default:0 }}" data-practical-subjects="{{ practical_subjects_count|default:0 }}">
+
+    <!-- Sidebar -->
+
+    <div class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+
+            <div class="logo-icon">
+
+                <i class="bi bi-mortarboard-fill"></i>
+
+            </div>
+
+            <h3>Teacher Portal</h3>
+
+        </div>
+
+        
+
+        <nav class="sidebar-menu">
+
+            <a href="#dashboard" class="menu-item active" onclick="event.preventDefault(); showSection('dashboard')">
+
+                <i class="bi bi-grid-fill"></i>
+
+                <span>Dashboard</span>
+
+            </a>
+
+
+
+            <a href="#students" class="menu-item" onclick="toggleStudentDropdown(event)">
+
+                <i class="bi bi-people-fill"></i>
+
+                <span>Students</span>
+
+                <i class="bi bi-chevron-down ms-auto dropdown-arrow"></i>
+
+            </a>
+
+            <div class="submenu" id="studentSubmenu">
+
+                <a href="#" class="submenu-item" onclick="event.preventDefault(); showSection('my-students')">
+
+                    <i class="bi bi-people"></i>
+
+                    <span>My Students</span>
+
+                </a>
+
+                <a href="#" class="submenu-item" onclick="event.preventDefault(); showSection('student-attendance')">
+
+                    <i class="bi bi-calendar-check"></i>
+
+                    <span>Attendance</span>
+
+                </a>
+
+
+            </div>
+
+
+
+            <a href="#subjects" class="menu-item" onclick="toggleSubjectDropdown(event)">
+
+                <i class="bi bi-book-fill"></i>
+
+                <span>Subjects</span>
+
+                <i class="bi bi-chevron-down ms-auto dropdown-arrow"></i>
+
+            </a>
+
+            <div class="submenu" id="subjectSubmenu">
+
+                <a href="#" class="submenu-item" onclick="event.preventDefault(); showSection('my-subjects')">
+
+                    <i class="bi bi-book"></i>
+
+                    <span>My Subjects</span>
+
+                </a>
+
+
+                <a href="#" class="submenu-item" onclick="event.preventDefault(); showSection('exams')">
+
+                    <i class="bi bi-file-earmark-text"></i>
+
+                    <span>Quiz test</span>
+
+                </a>
+
+            </div>
+
+
+
+            <a href="#schedule" class="menu-item" onclick="event.preventDefault(); showSection('schedule')">
+
+                <i class="bi bi-calendar-week"></i>
+
+                <span>Schedule</span>
+
+            </a>
+
+
+
+            <a href="#profile" class="menu-item" onclick="event.preventDefault(); showSection('profile')">
+
+                <i class="bi bi-person-circle"></i>
+
+                <span>My Profile</span>
+
+            </a>
+
+
+
+            <a href="{% url 'logout' %}" class="menu-item">
+
+                <i class="bi bi-box-arrow-right"></i>
+
+                <span>Logout</span>
+
+            </a>
+
+        </nav>
+
+    </div>
+
+
+
+    <!-- Main Content -->
+
+    <div class="main-content" id="mainContent">
+
+        <!-- Header -->
+
+        <div class="content-header">
+
+            <div class="header-title">
+                <!-- Toggle Button -->
+                <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1>Teacher Dashboard</h1>
+                <p>Welcome back, {{ teacher.first_name }} {{ teacher.last_name }}!</p>
+            </div>
+
+        </div>
+
+
+
+        <!-- Dashboard Section -->
+
+        <div id="dashboard-section" class="content-section active">
+
+            <h2 class="page-title">Dashboard Overview</h2>
+
+            <p class="page-subtitle">Quick overview of your teaching activities</p>
+
+            
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <h3>{{ total_students }}</h3>
+
+                    <p><i class="bi bi-people-fill me-2"></i>Total Students</p>
+
+                </div>
+
+                <div class="stat-card">
+
+                    <h3>{{ taught_subjects }}</h3>
+
+                    <p><i class="bi bi-book-fill me-2"></i>Subjects</p>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>{{ attendance_rate }}%</h3>
+
+                    <p><i class="bi bi-graph-up me-2"></i>Attendance Rate</p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="row mt-4">
+
+                <div class="col-md-8">
+
+                    <div class="card">
+
+                        <div class="card-header bg-primary text-white">
+
+                            <h5 class="mb-0"><i class="bi bi-calendar-week me-2"></i>Today's Schedule</h5>
+
+                        </div>
+
+                        <div class="card-body">
+                            {% if today_schedule %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    You have {{ today_schedule|length }} class{{ today_schedule|length|pluralize }} scheduled for today
+                                </div>
+                                <ul class="list-group">
+                                    {% for entry in today_schedule %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ entry.subject }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ entry.get_time_slot_display }} | Room {{ entry.room }} | Sem {{ entry.semester }}</small>
+                                            </div>
+                                            {% with current_time="now"|date:"H:i" %}
+                                                {% with entry_start=entry.get_time_slot_display|slice:":2" %}
+                                                    {% if current_time >= entry_start and current_time < entry.get_time_slot_display|slice:"-2:" %}
+                                                        <span class="badge bg-warning">In Progress</span>
+                                                    {% elif current_time < entry_start %}
+                                                        <span class="badge bg-success">Upcoming</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">Completed</span>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% endwith %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <div class="alert alert-light">
+                                    <i class="bi bi-calendar-x me-2"></i>
+                                    No classes scheduled for today. Enjoy your day!
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <div class="card">
+
+                        <div class="card-header bg-info text-white">
+
+                            <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>My Profile</h5>
+
+                        </div>
+
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-person-circle" style="font-size: 4rem; color: #667eea;"></i>
+                            </div>
+                            <h5>{{ teacher.first_name }} {{ teacher.last_name }}</h5>
+                            <p class="text-muted">{{ teacher.email }}</p>
+                            <p class="mb-1"><strong>Teacher ID:</strong> {{ teacher.teacher_id }}</p>
+                            <p class="mb-1"><strong>Department:</strong> {{ teacher.department.name|default:"Not Assigned" }}</p>
+                            <p class="mb-0"><strong>Experience:</strong> {{ teacher.years_of_experience|default:0 }} years</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Analytics & Graphs Section -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Teaching Analytics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Subject Distribution Chart -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0">Subject Distribution</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="subjectChart" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Weekly Teaching Hours Chart -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-success">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0">Weekly Teaching Hours</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="weeklyHoursChart" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <!-- Student Performance by Semester -->
+                                <div class="col-md-8 mb-4">
+                                    <div class="card border-info">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0">Student Performance by Semester</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="performanceChart" height="250"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Department Distribution -->
+                                <div class="col-md-4 mb-4">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0">Department Distribution</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="departmentChart" height="250"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <!-- Monthly Activity Chart -->
+                                <div class="col-12 mb-4">
+                                    <div class="card border-secondary">
+                                        <div class="card-header bg-secondary text-white">
+                                            <h6 class="mb-0">Monthly Teaching Activity</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="monthlyActivityChart" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- My Students Section -->
+
+        <div id="my-students-section" class="content-section">
+
+            <h2 class="page-title">My Students</h2>
+
+            <p class="page-subtitle">View and manage students assigned to your classes</p>
+
+            
+
+            <div class="card">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Student List</h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Student ID</th>
+
+                                    <th>Name</th>
+
+                                    <th>Email</th>
+
+                                    <th>Class</th>
+
+                                    <th>Attendance</th>
+
+                                    <th>Actions</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                {% if assigned_students %}
+                                    {% for student in assigned_students %}
+                                        <tr>
+                                            <td>{{ student.student_id|default:"N/A" }}</td>
+                                            <td>{{ student.first_name }} {{ student.last_name }}</td>
+                                            <td>{{ student.college_email|default:student.email }}</td>
+                                            <td>{{ student.department|default:"N/A" }} - {{ student.semester|default:"N/A" }}</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="viewStudentDetails('{{ student.id }}')">View Details</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">
+                                            <i class="bi bi-info-circle me-2"></i>No students assigned to your classes yet.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Attendance Section -->
+
+        <div id="student-attendance-section" class="content-section">
+
+            <h2 class="page-title">Student Attendance</h2>
+
+            <p class="page-subtitle">Mark and view student attendance</p>
+
+            
+
+            <div class="card">
+
+                <div class="card-header bg-success text-white">
+
+                    <h5 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Mark Attendance</h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form>
+
+                        <div class="row mb-3">
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">Select Date</label>
+
+                                <input type="date" class="form-control" value="{{ "now"|date:"Y-m-d" }}">
+
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Select Class</label>
+                                <select class="form-control" id="classSelect">
+                                    {% if teacher.department %}
+                                        <option value="{{ teacher.department.name }}">All - {{ teacher.department.name }}</option>
+                                        {% for subject in teacher.assigned_subjects.all %}
+                                            <option value="{{ subject.department.name }}-{{ subject.semester }}-{{ subject.subject_name }}">
+                                                {{ subject.department.name }} - Sem {{ subject.semester }} - {{ subject.subject_name }}
+                                            </option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="">No department assigned</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">&nbsp;</label>
+
+                                <button type="submit" class="btn btn-success w-100">Load Students</button>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                    
+
+                    <div class="table-responsive mt-4">
+
+                        <table class="table table-hover">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Student Name</th>
+
+                                    <th>Student ID</th>
+
+                                    <th>Present</th>
+
+                                    <th>Absent</th>
+
+                                    <th>Late</th>
+
+                                    <th>Remarks</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                {% if assigned_students %}
+                                    {% for student in assigned_students %}
+                                        <tr>
+                                            <td>{{ student.first_name }} {{ student.last_name }}</td>
+                                            <td>{{ student.student_id|default:"N/A" }}</td>
+                                            <td><input type="radio" name="attendance_{{ student.id }}" value="present" checked></td>
+                                            <td><input type="radio" name="attendance_{{ student.id }}" value="absent"></td>
+                                            <td><input type="radio" name="attendance_{{ student.id }}" value="late"></td>
+                                            <td><input type="text" class="form-control form-control-sm" name="remarks_{{ student.id }}" placeholder="Remarks"></td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">
+                                            <i class="bi bi-info-circle me-2"></i>No students found. Please select a class to load students.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    
+
+                    <div class="text-end mt-3">
+
+                        <button class="btn btn-primary-custom">Save Attendance</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Other sections would follow similar pattern... -->
+
+        <!-- For brevity, I'm adding placeholder sections -->
+
+
+
+
+        <div id="my-subjects-section" class="content-section">
+
+            <h2 class="page-title">My Subjects</h2>
+
+            <p class="page-subtitle">View subjects you are teaching</p>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-book me-2"></i>Your Subject Assignments</h5>
+                </div>
+                <div class="card-body">
+                    {% if teacher.assigned_subjects.all %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Subject Code</th>
+                                        <th>Subject Name</th>
+                                        <th>Department</th>
+                                        <th>Semester</th>
+                                        <th>Type</th>
+                                        <th>Credits</th>
+                                        <th>Students</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for subject in teacher.assigned_subjects.all %}
+                                        <tr>
+                                            <td><strong>{{ subject.subject_code }}</strong></td>
+                                            <td>{{ subject.subject_name }}</td>
+                                            <td>{{ subject.department.name|default:"N/A" }}</td>
+                                            <td>{{ subject.semester }}</td>
+                                            <td>
+                                                <span class="badge {% if subject.subject_type == 'core' %}bg-primary{% elif subject.subject_type == 'elective' %}bg-success{% else %}bg-info{% endif %}">
+                                                    {{ subject.get_subject_type_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ subject.credits }}</td>
+                                            <td>
+                                                {% with student_count=assigned_students|length %}
+                                                    <span class="badge bg-secondary">{{ student_count }}</span>
+                                                {% endwith %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>No subjects assigned</strong> - You haven't been assigned any subjects yet. Please contact the administrator for subject assignments.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+
+        <div id="exams-section" class="content-section">
+            <h2 class="page-title">Quiz test</h2>
+            <p class="page-subtitle">Create and manage quizzes and assessments for your students</p>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-clipboard-check me-2"></i>Quiz Management</h5>
+                            <button class="btn btn-light btn-sm" onclick="showCreateQuizModal()">
+                                <i class="bi bi-plus-circle me-1"></i> Create New Quiz
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <!-- Quiz List -->
+                            <div id="quizList">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Quiz Title</th>
+                                                <th>Subject</th>
+                                                <th>Questions</th>
+                                                <th>Duration</th>
+                                                <th>Status</th>
+                                                <th>Created</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="quizTableBody">
+                                            <tr>
+                                                <td colspan="7" class="text-center text-muted py-4">
+                                                    <i class="bi bi-journal-x display-4"></i>
+                                                    <h5 class="mt-3">No Quizzes Created</h5>
+                                                    <p>Create your first quiz to get started with assessments.</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quiz Statistics -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <h4 class="text-primary" id="totalQuizzes">0</h4>
+                            <p class="mb-0">Total Quizzes</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <h4 class="text-success" id="activeQuizzes">0</h4>
+                            <p class="mb-0">Active Quizzes</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-info">
+                        <div class="card-body text-center">
+                            <h4 class="text-info" id="completedQuizzes">0</h4>
+                            <p class="mb-0">Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <h4 class="text-warning" id="totalStudents">0</h4>
+                            <p class="mb-0">Total Students</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Quiz Modal -->
+        <div class="modal fade" id="createQuizModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Create New Quiz</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createQuizForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Quiz Title *</label>
+                                        <input type="text" class="form-control" id="quizTitle" name="title" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Subject *</label>
+                                        <select class="form-control" id="quizSubject" name="subject" required>
+                                            <option value="">Select Subject</option>
+                                            {% if teacher.assigned_subjects.all %}
+                                                {% for subject in teacher.assigned_subjects.all %}
+                                                    <option value="{{ subject.id }}">{{ subject.subject_code }} - {{ subject.subject_name }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Duration (minutes) *</label>
+                                        <input type="number" class="form-control" id="quizDuration" name="duration" min="5" max="180" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Total Questions *</label>
+                                        <input type="number" class="form-control" id="quizQuestions" name="total_questions" min="1" max="50" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Total Marks *</label>
+                                        <input type="number" class="form-control" id="quizMarks" name="total_marks" min="1" max="100" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Instructions</label>
+                                <textarea class="form-control" id="quizInstructions" name="instructions" rows="3" placeholder="Enter quiz instructions for students..."></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Start Date & Time</label>
+                                        <div class="input-group">
+                                            <input type="datetime-local" class="form-control" id="quizStartDateTime" name="start_datetime">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="setStartDateTimeToNow()" title="Set to current date and time">
+                                                <i class="bi bi-calendar-event"></i> Today
+                                            </button>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">Quick options:</small>
+                                            <div class="btn-group btn-group-sm mt-1" role="group">
+                                                <button type="button" class="btn btn-outline-info" onclick="setStartDateTime(0)">Now</button>
+                                                <button type="button" class="btn btn-outline-info" onclick="setStartDateTime(1)">+1 hour</button>
+                                                <button type="button" class="btn btn-outline-info" onclick="setStartDateTime(2)">+2 hours</button>
+                                                <button type="button" class="btn btn-outline-info" onclick="setStartDateTime(24)">Tomorrow</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">End Date & Time</label>
+                                        <div class="input-group">
+                                            <input type="datetime-local" class="form-control" id="quizEndDateTime" name="end_datetime">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="setEndDateTimeToDefault()" title="Set to default (1 week from start)">
+                                                <i class="bi bi-clock"></i> Default
+                                            </button>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">Duration from start:</small>
+                                            <div class="btn-group btn-group-sm mt-1" role="group">
+                                                <button type="button" class="btn btn-outline-warning" onclick="setEndDateTime(1)">+1 hour</button>
+                                                <button type="button" class="btn btn-outline-warning" onclick="setEndDateTime(2)">+2 hours</button>
+                                                <button type="button" class="btn btn-outline-warning" onclick="setEndDateTime(6)">+6 hours</button>
+                                                <button type="button" class="btn btn-outline-warning" onclick="setEndDateTime(24)">+1 day</button>
+                                                <button type="button" class="btn btn-outline-warning" onclick="setEndDateTime(168)">+1 week</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="quizShuffleQuestions">
+                                    <label class="form-check-label" for="quizShuffleQuestions">
+                                        Shuffle Questions
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="quizShowResults">
+                                    <label class="form-check-label" for="quizShowResults">
+                                        Show Results Immediately
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="quizAllowRetake">
+                                    <label class="form-check-label" for="quizAllowRetake">
+                                        Allow Retake
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-success" onclick="createQuiz()">
+                            <i class="bi bi-check-circle me-1"></i>Create Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Questions Modal -->
+        <div class="modal fade" id="quizQuestionsModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title"><i class="bi bi-question-circle me-2"></i>Manage Quiz Questions</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="quizQuestionsContainer">
+                            <div class="text-center py-4">
+                                <i class="bi bi-plus-circle display-4 text-muted"></i>
+                                <h5 class="mt-3">No Questions Added</h5>
+                                <p class="text-muted">Add questions to complete your quiz.</p>
+                                <button class="btn btn-info" onclick="addQuestion()">
+                                    <i class="bi bi-plus me-1"></i>Add Question
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" onclick="saveQuizQuestions()">
+                            <i class="bi bi-check-circle me-1"></i>Save Changes
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="addQuestion()">
+                            <i class="bi bi-plus me-1"></i>Add Question
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="schedule-section" class="content-section">
+            <h2 class="page-title">Teaching Schedule</h2>
+            <p class="page-subtitle">View your weekly teaching schedule</p>
+            
+            {% if timetable_entries %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Department</th>
+                                <th>Semester</th>
+                                <th>Day</th>
+                                <th>Time</th>
+                                <th>Subject</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in timetable_entries %}
+                                <tr>
+                                    <td>{{ entry.department.name }}</td>
+                                    <td>{{ entry.semester }}</td>
+                                    <td><strong>{{ entry.get_day_display }}</strong></td>
+                                    <td>{{ entry.get_time_slot_display }}</td>
+                                    <td>{{ entry.subject }}</td>
+                                    <td>{{ entry.room }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        No timetable entries found.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    No timetable entries are currently available. Please contact the administration.
+                </div>
+            {% endif %}
+        </div>
+
+
+
+        <div id="profile-section" class="content-section">
+            <h2 class="page-title">My Profile</h2>
+            <p class="page-subtitle">View and update your personal information</p>
+            
+            <div class="row">
+                <!-- Profile Card -->
+                <div class="col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="avatar-circle bg-primary text-white d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person-fill fs-1"></i>
+                                </div>
+                            </div>
+                            <h4 class="card-title">{{ teacher.first_name }} {{ teacher.last_name }}</h4>
+                            <p class="text-muted">{{ teacher.designation|default:"Teacher" }}</p>
+                            <div class="mt-3">
+                                <span class="badge bg-info">{{ teacher.department.name|default:"Not Assigned" }}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <small class="text-muted">
+                                <i class="bi bi-calendar me-1"></i>
+                                Joined: {{ teacher.created_at|date:"M d, Y"|default:"N/A" }}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Stats -->
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h6 class="card-title">Quick Stats</h6>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h5 class="text-primary">{{ taught_subjects }}</h5>
+                                    <small class="text-muted">Subjects</small>
+                                </div>
+                                <div class="col-6">
+                                    <h5 class="text-success">{{ total_students }}</h5>
+                                    <small class="text-muted">Students</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Form -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-person-gear me-2"></i>Profile Information</h5>
+                            <button class="btn btn-light btn-sm" onclick="toggleEditMode()">
+                                <i class="bi bi-pencil me-1"></i>Edit Profile
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <form id="profileForm">
+                                <div class="row">
+                                    <!-- Basic Information -->
+                                    <div class="col-12">
+                                        <h6 class="text-primary mb-3">Basic Information</h6>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">First Name</label>
+                                            <input type="text" class="form-control" id="firstName" value="{{ teacher.first_name }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Last Name</label>
+                                            <input type="text" class="form-control" id="lastName" value="{{ teacher.last_name }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" value="{{ teacher.email }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Phone Number</label>
+                                            <input type="tel" class="form-control" id="phone" value="{{ teacher.phone_number|default:'' }}" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-4">
+                                    <!-- Professional Information -->
+                                    <div class="col-12">
+                                        <h6 class="text-primary mb-3">Professional Information</h6>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Teacher ID</label>
+                                            <input type="text" class="form-control" value="{{ teacher.teacher_id }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Department</label>
+                                            <input type="text" class="form-control" value="{{ teacher.department.name|default:'Not Assigned' }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Designation</label>
+                                            <input type="text" class="form-control" id="designation" value="{{ teacher.designation|default:'Teacher' }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Experience (years)</label>
+                                            <input type="number" class="form-control" id="experience" value="{{ teacher.years_of_experience|default:0 }}" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-end">
+                                            <button type="button" class="btn btn-secondary me-2" id="cancelBtn" onclick="cancelEdit()" style="display: none;">
+                                                <i class="bi bi-x-circle me-1"></i>Cancel
+                                            </button>
+                                            <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveProfile()" style="display: none;">
+                                                <i class="bi bi-check-circle me-1"></i>Save Changes
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" onclick="changePassword()">
+                                                <i class="bi bi-key me-1"></i>Change Password
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Responses Modal -->
+        <div class="modal fade" id="quizResponsesModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-white">
+                        <h5 class="modal-title"><i class="bi bi-people me-2"></i>Quiz Responses</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6><i class="bi bi-book me-2"></i><span id="responsesQuizTitle">Quiz Title</span></h6>
+                                <p class="text-muted mb-0">Student responses and performance analysis</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="card border-primary">
+                                            <div class="card-body p-2">
+                                                <h5 class="text-primary mb-0" id="totalAttempts">0</h5>
+                                                <small class="text-muted">Total Attempts</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="card border-success">
+                                            <div class="card-body p-2">
+                                                <h5 class="text-success mb-0" id="averageScore">0%</h5>
+                                                <small class="text-muted">Average Score</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="card border-info">
+                                            <div class="card-body p-2">
+                                                <h5 class="text-info mb-0" id="passRate">0%</h5>
+                                                <small class="text-muted">Pass Rate</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Responses Table -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Student ID</th>
+                                        <th>Submitted</th>
+                                        <th>Status</th>
+                                        <th>Marks</th>
+                                        <th>Percentage</th>
+                                        <th>Time Taken</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="responsesTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            <i class="bi bi-hourglass-split display-4"></i>
+                                            <h5 class="mt-3">Loading Responses...</h5>
+                                            <p class="mt-1">Please wait while we fetch the quiz responses.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Individual Response Details -->
+                        <div id="responseDetails" class="mt-4" style="display: none;">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0"><i class="bi bi-person-check me-2"></i><span id="responseStudentName">Student Name</span> - Detailed Response</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <strong>Total Marks:</strong> <span id="responseTotalMarks">0</span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Obtained Marks:</strong> <span id="responseObtainedMarks">0</span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Percentage:</strong> <span id="responsePercentage">0%</span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Time Taken:</strong> <span id="responseTimeTaken">0 min</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <h6 class="mt-4 mb-3">Question-wise Performance:</h6>
+                                    <div id="questionAnswersList">
+                                        <!-- Question answers will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="exportResponses()">
+                            <i class="bi bi-download me-1"></i>Export Responses
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password Modal -->
+        <div class="modal fade" id="changePasswordModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title"><i class="bi bi-key me-2"></i>Change Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="changePasswordForm">
+                            <div class="mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" class="form-control" id="currentPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="newPassword" required>
+                                <div class="form-text">Password must be at least 8 characters long</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-warning" onclick="updatePassword()">
+                            <i class="bi bi-key me-1"></i>Change Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!-- Bootstrap 5 JS Bundle -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+
+    <script>
+
+        // Toggle Sidebar
+
+        function toggleSidebar() {
+
+            try {
+
+                const sidebar = document.getElementById('sidebar');
+
+                const mainContent = document.getElementById('mainContent');
+
+                
+
+                if (!sidebar || !mainContent) {
+
+                    console.error('Required elements not found');
+
+                    return;
+
+                }
+
+                
+
+                sidebar.classList.toggle('collapsed');
+
+                mainContent.classList.toggle('expanded');
+
+            } catch (error) {
+
+                console.error('Error toggling sidebar:', error);
+
+            }
+
+        }
+
+
+
+        // Show Section
+
+        function showSection(section) {
+
+            // Hide all sections
+
+            document.querySelectorAll('.content-section').forEach(sec => {
+
+                sec.classList.remove('active');
+
+            });
+
+            
+
+            // Show selected section
+
+            const selectedSection = document.getElementById(section + '-section');
+
+            if (selectedSection) {
+
+                selectedSection.classList.add('active');
+
+            }
+
+            
+
+            // Update active menu item
+
+            document.querySelectorAll('.menu-item').forEach(item => {
+
+                item.classList.remove('active');
+
+            });
+
+            
+
+            const clickedElement = event.target.closest('.menu-item') || event.target.closest('.submenu-item');
+
+            if (clickedElement) {
+
+                clickedElement.classList.add('active');
+
+            }
+
+        }
+
+
+
+        // Toggle Dropdowns
+
+        function toggleStudentDropdown(event) {
+
+            event.preventDefault();
+
+            const submenu = document.getElementById('studentSubmenu');
+
+            const arrow = event.target.closest('.menu-item').querySelector('.dropdown-arrow');
+
+            
+
+            submenu.classList.toggle('show');
+
+            arrow.classList.toggle('rotated');
+
+        }
+
+
+
+        function toggleSubjectDropdown(event) {
+
+            event.preventDefault();
+
+            const submenu = document.getElementById('subjectSubmenu');
+
+            const arrow = event.target.closest('.menu-item').querySelector('.dropdown-arrow');
+
+            
+
+            submenu.classList.toggle('show');
+
+            arrow.classList.toggle('rotated');
+
+        }
+
+
+
+        // Profile Management Functions
+        function toggleEditMode() {
+            const editableFields = ['firstName', 'lastName', 'phone', 'designation', 'experience'];
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const editBtn = document.querySelector('[onclick="toggleEditMode()"]');
+            
+            // Toggle field states
+            editableFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.disabled = !field.disabled;
+                }
+            });
+            
+            // Toggle button visibility
+            if (saveBtn.style.display === 'none') {
+                saveBtn.style.display = 'inline-block';
+                cancelBtn.style.display = 'inline-block';
+                editBtn.style.display = 'none';
+            } else {
+                saveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                editBtn.style.display = 'inline-block';
+            }
+        }
+
+        function saveProfile() {
+            // Get form data
+            const profileData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value,
+                designation: document.getElementById('designation').value,
+                experience: document.getElementById('experience').value
+            };
+
+            // Validate required fields
+            if (!profileData.firstName || !profileData.lastName) {
+                showAlert('First name and last name are required', 'warning');
+                return;
+            }
+
+            // Save to localStorage (in a real app, this would be sent to server)
+            localStorage.setItem('teacherProfile', JSON.stringify(profileData));
+            
+            // Update display
+            const nameElements = document.querySelectorAll('.card-title');
+            nameElements.forEach(el => {
+                if (el.textContent.includes('{{ teacher.first_name }} {{ teacher.last_name }}')) {
+                    el.textContent = `${profileData.firstName} ${profileData.lastName}`;
+                }
+            });
+
+            // Disable fields and hide buttons
+            toggleEditMode();
+            
+            showAlert('Profile updated successfully!', 'success');
+        }
+
+        function cancelEdit() {
+            // Reload original values from template
+            location.reload();
+        }
+
+        function changePassword() {
+            // Show password change modal
+            const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+            modal.show();
+        }
+
+        function updatePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showAlert('Please fill all password fields', 'warning');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                showAlert('New password must be at least 8 characters long', 'warning');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showAlert('New password and confirm password do not match', 'warning');
+                return;
+            }
+
+            // In a real application, this would be sent to server
+            // For now, we'll just show success message
+            showAlert('Password changed successfully!', 'success');
+            
+            // Close modal and reset form
+            bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        // Load saved profile data on page load
+        function loadProfileData() {
+            const savedProfile = localStorage.getItem('teacherProfile');
+            if (savedProfile) {
+                try {
+                    const profileData = JSON.parse(savedProfile);
+                    
+                    // Update form fields
+                    Object.keys(profileData).forEach(fieldId => {
+                        const field = document.getElementById(fieldId);
+                        if (field && profileData[fieldId]) {
+                            field.value = profileData[fieldId];
+                        }
+                    });
+                    
+                    // Update display name
+                    const nameElements = document.querySelectorAll('.card-title');
+                    nameElements.forEach(el => {
+                        if (profileData.firstName && profileData.lastName) {
+                            el.textContent = `${profileData.firstName} ${profileData.lastName}`;
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.error('Error loading profile data:', error);
+                }
+            }
+        }
+
+        // Assignment Management Functions
+        function viewSubjectDetails(subjectId) {
+            // Placeholder for viewing subject details
+            alert(`Viewing details for subject ID: ${subjectId}\n\nThis feature will show:\n- Subject syllabus\n- Student list\n- Schedule details\n- Assignment history`);
+        }
+
+
+        function viewStudentDetails(studentId) {
+            // Placeholder for viewing student details
+            alert(`Viewing details for student ID: ${studentId}\n\nThis feature will show:\n- Student profile\n- Attendance record\n- Grade history\n- Assignment submissions`);
+        }
+
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Quiz Management Functions
+        let quizzes = [];
+        let currentQuizId = null;
+
+        // Date/Time helper functions for quiz creation
+        function setStartDateTimeToNow() {
+            const now = new Date();
+            const localDateTime = formatDateTimeLocal(now);
+            document.getElementById('quizStartDateTime').value = localDateTime;
+            console.log('Set start time to:', localDateTime, '(Local time)');
+            // Auto-set end time to 1 week from now
+            setEndDateTimeToDefault();
+        }
+
+        function setStartDateTime(hoursFromNow) {
+            const now = new Date();
+            now.setHours(now.getHours() + hoursFromNow);
+            const localDateTime = formatDateTimeLocal(now);
+            document.getElementById('quizStartDateTime').value = localDateTime;
+            // Auto-set end time to 1 week from start
+            setEndDateTimeToDefault();
+        }
+
+        function setEndDateTimeToDefault() {
+            const startDateTime = document.getElementById('quizStartDateTime').value;
+            if (startDateTime) {
+                const startDate = new Date(startDateTime);
+                startDate.setDate(startDate.getDate() + 7); // Add 1 week
+                const localDateTime = formatDateTimeLocal(startDate);
+                document.getElementById('quizEndDateTime').value = localDateTime;
+            } else {
+                // If no start date, set to 1 week from now
+                const now = new Date();
+                now.setDate(now.getDate() + 7);
+                const localDateTime = formatDateTimeLocal(now);
+                document.getElementById('quizEndDateTime').value = localDateTime;
+            }
+        }
+
+        function setEndDateTime(hoursFromStart) {
+            const startDateTime = document.getElementById('quizStartDateTime').value;
+            if (startDateTime) {
+                const startDate = new Date(startDateTime);
+                startDate.setHours(startDate.getHours() + hoursFromStart);
+                const localDateTime = formatDateTimeLocal(startDate);
+                document.getElementById('quizEndDateTime').value = localDateTime;
+            } else {
+                // If no start date, set from now
+                const now = new Date();
+                now.setHours(now.getHours() + hoursFromStart);
+                const localDateTime = formatDateTimeLocal(now);
+                document.getElementById('quizEndDateTime').value = localDateTime;
+            }
+        }
+
+        function formatDateTimeLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        // Load quizzes from backend on page load
+        function loadQuizzesFromBackend() {
+            fetch('/quiz/get-teacher-quizzes/', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    quizzes = data.quizzes;
+                    refreshQuizList();
+                    updateQuizStatistics();
+                } else {
+                    console.error('Error loading quizzes:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading quizzes:', error);
+            });
+        }
+
+        function showCreateQuizModal() {
+            // Reset form
+            document.getElementById('createQuizForm').reset();
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('createQuizModal'));
+            modal.show();
+        }
+
+        function createQuiz() {
+            const form = document.getElementById('createQuizForm');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const formData = new FormData(form);
+            
+            // Debug: Log form data
+            console.log('DEBUG: Creating quiz with form data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`  ${key}: ${value}`);
+            }
+            
+            fetch('/quiz/create/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: formData
+            })
+            .then(response => {
+                console.log('DEBUG: Quiz creation response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('DEBUG: Quiz creation response:', data);
+                if (data.success) {
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('createQuizModal'));
+                    modal.hide();
+                    
+                    // Reload quizzes from backend
+                    loadQuizzesFromBackend();
+                    
+                    showAlert('Quiz created successfully! You can now add questions.', 'success');
+                } else {
+                    showAlert(data.message || 'Error creating quiz', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error creating quiz:', error);
+                showAlert('Error creating quiz. Please try again.', 'danger');
+            });
+        }
+
+        function refreshQuizList() {
+            const tbody = document.getElementById('quizTableBody');
+            tbody.innerHTML = '';
+
+            if (quizzes.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-journal-x display-4"></i>
+                            <h5 class="mt-3">No Quizzes Created</h5>
+                            <p>Create your first quiz to get started with assessments.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            quizzes.forEach(quiz => {
+                const statusBadge = getStatusBadge(quiz.status);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${quiz.title}</strong></td>
+                    <td>${quiz.subject}</td>
+                    <td>${quiz.total_questions}</td>
+                    <td>${quiz.duration_minutes} min</td>
+                    <td>${statusBadge}</td>
+                    <td>${formatDate(quiz.created_date)}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button class="btn btn-outline-info" onclick="manageQuestions(${quiz.id})" title="Manage Questions">
+                                <i class="bi bi-question-circle"></i>
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="viewResponses(${quiz.id})" title="View Responses">
+                                <i class="bi bi-people"></i>
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="viewQuiz(${quiz.id})" title="View Quiz">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-success" onclick="publishQuiz(${quiz.id})" title="Publish Quiz">
+                                <i class="bi bi-send"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteQuiz(${quiz.id})" title="Delete Quiz">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'draft': '<span class="badge bg-secondary">Draft</span>',
+                'published': '<span class="badge bg-success">Published</span>',
+                'active': '<span class="badge bg-primary">Active</span>',
+                'completed': '<span class="badge bg-info">Completed</span>',
+                'expired': '<span class="badge bg-warning">Expired</span>'
+            };
+            return badges[status] || badges['draft'];
+        }
+
+        function getQuestionTypeDisplay(questionType) {
+            const types = {
+                'mcq': 'Multiple Choice',
+                'true_false': 'True/False',
+                'short_answer': 'Short Answer',
+                'essay': 'Essay'
+            };
+            return types[questionType] || questionType;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function manageQuestions(quizId) {
+            currentQuizId = quizId;
+            const quiz = quizzes.find(q => q.id === quizId);
+            
+            // Show questions modal
+            const modal = new bootstrap.Modal(document.getElementById('quizQuestionsModal'));
+            modal.show();
+            
+            // Load existing questions if any
+            loadQuizQuestions(quizId);
+        }
+
+        function loadQuizQuestions(quizId) {
+            const container = document.getElementById('quizQuestionsContainer');
+            
+            // Show loading state
+            container.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading questions...</span>
+                    </div>
+                    <p class="mt-3">Loading quiz questions...</p>
+                </div>
+            `;
+            
+            // Fetch questions from backend
+            fetch(`/quiz/get-questions/${quizId}/`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayQuizQuestions(data.questions);
+                } else {
+                    container.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Error loading questions: ${data.message}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading questions:', error);
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Error loading questions. Please try again.
+                    </div>
+                `;
+            });
+        }
+        
+        function displayQuizQuestions(questions) {
+            const container = document.getElementById('quizQuestionsContainer');
+            
+            if (!questions || questions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="bi bi-plus-circle display-4 text-muted"></i>
+                        <h5 class="mt-3">No Questions Added</h5>
+                        <p class="text-muted">Add questions to complete your quiz.</p>
+                        <button class="btn btn-info" onclick="addQuestion()">
+                            <i class="bi bi-plus me-1"></i>Add Question
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            let questionsHtml = '<div class="row">';
+            questions.forEach((question, index) => {
+                questionsHtml += `
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-secondary">
+                            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                <span><strong>Q${index + 1}:</strong> ${question.question_text}</span>
+                                <button class="btn btn-sm btn-outline-light" onclick="removeQuestion(${question.id})" title="Remove Question">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-1"><strong>Type:</strong> ${getQuestionTypeDisplay(question.question_type)}</p>
+                                <p class="mb-1"><strong>Marks:</strong> ${question.marks}</p>
+                                ${question.options && question.options.length > 0 ? `
+                                    <p class="mb-1"><strong>Options:</strong></p>
+                                    <ol class="mb-0">
+                                        ${question.options.map((opt, i) => `<li>${opt.option_text} ${opt.is_correct ? '(✓)' : ''}</li>`).join('')}
+                                    </ol>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            questionsHtml += '</div>';
+            
+            questionsHtml += `
+                <div class="text-center mt-4">
+                    <button class="btn btn-info" onclick="addQuestion()">
+                        <i class="bi bi-plus me-1"></i>Add Question
+                    </button>
+                </div>
+            `;
+            
+            container.innerHTML = questionsHtml;
+        }
+
+        function addQuestion() {
+            const questionHtml = `
+                <div class="card mb-3 border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">Add New Question</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Question Text *</label>
+                            <textarea class="form-control" id="questionText" rows="2" placeholder="Enter your question..." required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Question Type *</label>
+                                    <select class="form-control" id="questionType" onchange="updateQuestionOptions()">
+                                        <option value="multiple-choice">Multiple Choice</option>
+                                        <option value="true-false">True/False</option>
+                                        <option value="short-answer">Short Answer</option>
+                                        <option value="essay">Essay</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Marks *</label>
+                                    <input type="number" class="form-control" id="questionMarks" min="1" max="10" value="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Difficulty</label>
+                                    <select class="form-control" id="questionDifficulty">
+                                        <option value="easy">Easy</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="hard">Hard</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="optionsContainer">
+                            <div class="mb-3">
+                                <label class="form-label">Options *</label>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <input type="text" class="form-control" placeholder="Option A" id="optionA">
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <input type="text" class="form-control" placeholder="Option B" id="optionB">
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <input type="text" class="form-control" placeholder="Option C" id="optionC">
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <input type="text" class="form-control" placeholder="Option D" id="optionD">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Correct Answer *</label>
+                                <select class="form-control" id="correctAnswer">
+                                    <option value="0">Option A</option>
+                                    <option value="1">Option B</option>
+                                    <option value="2">Option C</option>
+                                    <option value="3">Option D</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Explanation (Optional)</label>
+                            <textarea class="form-control" id="questionExplanation" rows="2" placeholder="Explain the correct answer..."></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-secondary me-2" onclick="cancelAddQuestion()">Cancel</button>
+                            <button class="btn btn-primary" onclick="saveQuestion()">Save Question</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('quizQuestionsContainer').innerHTML = questionHtml;
+        }
+
+        function updateQuestionOptions() {
+            const questionType = document.getElementById('questionType').value;
+            const optionsContainer = document.getElementById('optionsContainer');
+            
+            if (questionType === 'true-false') {
+                optionsContainer.innerHTML = `
+                    <div class="mb-3">
+                        <label class="form-label">Correct Answer *</label>
+                        <select class="form-control" id="correctAnswer">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                `;
+            } else if (questionType === 'multiple-choice') {
+                optionsContainer.innerHTML = `
+                    <div class="mb-3">
+                        <label class="form-label">Options *</label>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" placeholder="Option A" id="optionA">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" placeholder="Option B" id="optionB">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" placeholder="Option C" id="optionC">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" placeholder="Option D" id="optionD">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Correct Answer *</label>
+                        <select class="form-control" id="correctAnswer">
+                            <option value="0">Option A</option>
+                            <option value="1">Option B</option>
+                            <option value="2">Option C</option>
+                            <option value="3">Option D</option>
+                        </select>
+                    </div>
+                `;
+            } else {
+                optionsContainer.innerHTML = '';
+            }
+        }
+
+        function saveQuestion() {
+            const questionText = document.getElementById('questionText').value;
+            const questionType = document.getElementById('questionType').value;
+            const questionMarks = document.getElementById('questionMarks').value;
+            const questionExplanation = document.getElementById('questionExplanation').value;
+            
+            if (!questionText) {
+                showAlert('Please enter question text', 'warning');
+                return;
+            }
+
+            // Create form data for backend submission
+            const formData = new FormData();
+            formData.append('quiz_id', currentQuizId);
+            formData.append('question_text', questionText);
+            formData.append('question_type', questionType);
+            formData.append('marks', questionMarks);
+            formData.append('explanation', questionExplanation);
+
+            // Debug: Print form data before sending
+            console.log('DEBUG: Sending question data:');
+            console.log('  quiz_id:', currentQuizId);
+            console.log('  question_text:', questionText);
+            console.log('  question_type:', questionType);
+            console.log('  marks:', questionMarks);
+            console.log('  explanation:', questionExplanation);
+            
+            if (questionType === 'multiple-choice') {
+                const options = [
+                    document.getElementById('optionA').value,
+                    document.getElementById('optionB').value,
+                    document.getElementById('optionC').value,
+                    document.getElementById('optionD').value
+                ];
+                const correctOption = document.getElementById('correctAnswer').value;
+                
+                console.log('DEBUG: MCQ Options:', options);
+                console.log('DEBUG: Correct option index:', correctOption);
+                
+                if (options.some(opt => !opt)) {
+                    showAlert('Please fill all options', 'warning');
+                    return;
+                }
+                
+                // Add options to form data
+                options.forEach(option => {
+                    formData.append('options', option);
+                });
+                formData.append('correct_option', correctOption);
+            } else if (questionType === 'true-false') {
+                const correctAnswer = document.getElementById('correctAnswer').value;
+                console.log('DEBUG: True/False correct answer:', correctAnswer);
+                formData.append('correct_answer', correctAnswer);
+            } else {
+                console.log('DEBUG: Not MCQ or True/False question type, skipping options');
+            }
+
+            // Debug: Log all form data
+            console.log('DEBUG: Complete form data being sent:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`  ${key}: ${value}`);
+            }
+
+            // Send to backend
+            fetch('/quiz/create-question/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: formData
+            })
+            .then(response => {
+                console.log('DEBUG: Question creation response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('DEBUG: Question creation response:', data);
+                if (data.success) {
+                    // Refresh questions display
+                    loadQuizQuestions(currentQuizId);
+                    showAlert('Question added successfully!', 'success');
+                } else {
+                    showAlert(data.message || 'Error creating question', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error creating question:', error);
+                showAlert('Error creating question. Please try again.', 'danger');
+            });
+        }
+
+        function cancelAddQuestion() {
+            loadQuizQuestions(currentQuizId);
+        }
+
+        function saveQuizQuestions() {
+            // Reload the quiz list to ensure we have the latest data
+            loadQuizzesFromBackend();
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('quizQuestionsModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Show success message
+            showAlert('Quiz questions saved successfully!', 'success');
+        }
+
+        function removeQuestion(questionId) {
+            if (confirm('Are you sure you want to delete this question? This action cannot be undone.')) {
+                fetch(`/quiz/delete-question/${questionId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Refresh questions display
+                        loadQuizQuestions(currentQuizId);
+                        showAlert('Question removed successfully', 'info');
+                    } else {
+                        showAlert(data.message || 'Error deleting question', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting question:', error);
+                    showAlert('Error deleting question. Please try again.', 'danger');
+                });
+            }
+        }
+
+        function viewQuiz(quizId) {
+            const quiz = quizzes.find(q => q.id === quizId);
+            alert(`Quiz Details:\n\nTitle: ${quiz.title}\nSubject: ${quiz.subject}\nDuration: ${quiz.duration_minutes} minutes\nQuestions: ${quiz.total_questions}\nMarks: ${quiz.total_marks}\nStatus: ${quiz.status.charAt(0).toUpperCase() + quiz.status.slice(1)}\nDepartment: ${quiz.department}\nSemester: ${quiz.semester}\n\nStart: ${quiz.start_date}\nEnd: ${quiz.end_date}`);
+        }
+
+        function publishQuiz(quizId) {
+            if (confirm('Are you sure you want to publish this quiz? Students will be able to take it once published.')) {
+                // First check if quiz has questions by fetching from backend
+                fetch(`/quiz/get-questions/${quizId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (!data.questions || data.questions.length === 0) {
+                            showAlert('Please add questions before publishing the quiz', 'warning');
+                            return;
+                        }
+                        
+                        // Quiz has questions, proceed with publishing
+                        publishQuizToBackend(quizId);
+                    } else {
+                        showAlert('Error checking quiz questions. Please try again.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking questions:', error);
+                    showAlert('Error checking quiz questions. Please try again.', 'danger');
+                });
+            }
+        }
+        
+        function publishQuizToBackend(quizId) {
+            fetch(`/quiz/publish/${quizId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload quiz list to reflect published status
+                    loadQuizzesFromBackend();
+                    showAlert('Quiz published successfully! Students can now take this quiz.', 'success');
+                } else {
+                    showAlert(data.message || 'Error publishing quiz', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error publishing quiz:', error);
+                showAlert('Error publishing quiz. Please try again.', 'danger');
+            });
+        }
+
+        function deleteQuiz(quizId) {
+            if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
+                fetch(`/quiz/delete/${quizId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload quiz list to reflect deletion
+                        loadQuizzesFromBackend();
+                        showAlert('Quiz deleted successfully', 'info');
+                    } else {
+                        showAlert(data.message || 'Error deleting quiz', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting quiz:', error);
+                    showAlert('Error deleting quiz. Please try again.', 'danger');
+                });
+            }
+        }
+
+        function updateQuizStatistics() {
+            const totalQuizzes = quizzes.length;
+            const activeQuizzes = quizzes.filter(q => q.status === 'active' || q.status === 'published').length;
+            const completedQuizzes = quizzes.filter(q => q.status === 'completed').length;
+            const totalStudents = parseInt(document.body.getAttribute('data-total-students') || '0');
+
+            document.getElementById('totalQuizzes').textContent = totalQuizzes;
+            document.getElementById('activeQuizzes').textContent = activeQuizzes;
+            document.getElementById('completedQuizzes').textContent = completedQuizzes;
+            document.getElementById('totalStudents').textContent = totalStudents;
+        }
+
+        function showAlert(message, type) {
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 3000);
+        }
+
+        // Initialize quiz statistics on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuizzesFromBackend();  // Load quizzes from backend
+            loadProfileData();          // Load saved profile data
+            updateQuizStatistics();
+            initializeCharts();        // Initialize analytics charts
+        });
+
+        // Initialize Charts
+        function initializeCharts() {
+            // Get subject counts from data attributes
+            const coreCount = parseInt(document.body.getAttribute('data-core-subjects') || '0');
+            const electiveCount = parseInt(document.body.getAttribute('data-elective-subjects') || '0');
+            const practicalCount = parseInt(document.body.getAttribute('data-practical-subjects') || '0');
+            
+            // Subject Distribution Chart (Doughnut)
+            const subjectCtx = document.getElementById('subjectChart');
+            if (subjectCtx) {
+                new Chart(subjectCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Core Subjects', 'Elective Subjects', 'Practical Subjects'],
+                        datasets: [{
+                            data: [coreCount, electiveCount, practicalCount],
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(255, 193, 7, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(102, 126, 234, 1)',
+                                'rgba(40, 167, 69, 1)',
+                                'rgba(255, 193, 7, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Subject Types Distribution'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Weekly Teaching Hours Chart (Bar)
+            const weeklyHoursCtx = document.getElementById('weeklyHoursChart');
+            if (weeklyHoursCtx) {
+                // Calculate weekly hours based on timetable entries
+                const weeklyData = [0, 0, 0, 0, 0, 0, 0]; // Initialize with zeros
+                // This will be populated from actual timetable data in the future
+                new Chart(weeklyHoursCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                        datasets: [{
+                            label: 'Teaching Hours',
+                            data: weeklyData,
+                            backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Hours'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Weekly Teaching Schedule'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Student Performance by Semester (Line Chart)
+            const performanceCtx = document.getElementById('performanceChart');
+            if (performanceCtx) {
+                // Initialize with empty data - will be populated from actual student performance data
+                const performanceData = [0, 0, 0, 0, 0, 0, 0, 0];
+                const targetData = [75, 75, 75, 75, 75, 75, 75, 75]; // Target performance of 75%
+                
+                new Chart(performanceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'],
+                        datasets: [{
+                            label: 'Average Performance',
+                            data: performanceData,
+                            borderColor: 'rgba(23, 162, 184, 1)',
+                            backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Target Performance',
+                            data: targetData,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 0,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Performance Score'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Student Performance Trends'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Department Distribution (Pie Chart)
+            const departmentCtx = document.getElementById('departmentChart');
+            if (departmentCtx) {
+                // Initialize with empty data - will be populated from actual department data
+                const departmentData = [0, 0, 0, 0, 0];
+                const departmentLabels = ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical'];
+                
+                new Chart(departmentCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: departmentLabels,
+                        datasets: [{
+                            data: departmentData,
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(255, 193, 7, 0.8)',
+                                'rgba(220, 53, 69, 0.8)',
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(23, 162, 184, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(102, 126, 234, 1)',
+                                'rgba(255, 193, 7, 1)',
+                                'rgba(220, 53, 69, 1)',
+                                'rgba(40, 167, 69, 1)',
+                                'rgba(23, 162, 184, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Students by Department'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Monthly Teaching Activity (Line Chart)
+            const monthlyActivityCtx = document.getElementById('monthlyActivityChart');
+            if (monthlyActivityCtx) {
+                // Initialize with empty data - will be populated from actual activity data
+                const classesData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                const quizzesData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                
+                new Chart(monthlyActivityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Classes Conducted',
+                            data: classesData,
+                            borderColor: 'rgba(108, 117, 125, 1)',
+                            backgroundColor: 'rgba(108, 117, 125, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3
+                        }, {
+                            label: 'Quizzes Created',
+                            data: quizzesData,
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Count'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Teaching Activity'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.menu-item')) {
+                document.querySelectorAll('.submenu').forEach(submenu => {
+                    submenu.classList.remove('show');
+                });
+                document.querySelectorAll('.dropdown-arrow').forEach(arrow => {
+                    arrow.classList.remove('rotated');
+                });
+            }
+        });
+
+        // View Responses Functions
+        function viewResponses(quizId) {
+            currentQuizId = quizId;
+            const quiz = quizzes.find(q => q.id === quizId);
+            
+            // Set quiz title
+            document.getElementById('responsesQuizTitle').textContent = quiz.title;
+            
+            // Reset modal content
+            document.getElementById('responsesTableBody').innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        <i class="bi bi-hourglass-split display-4"></i>
+                        <h5 class="mt-3">Loading Responses...</h5>
+                        <p class="mt-1">Please wait while we fetch the quiz responses.</p>
+                    </td>
+                </tr>
+            `;
+            
+            document.getElementById('responseDetails').style.display = 'none';
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('quizResponsesModal'));
+            modal.show();
+            
+            // Load responses from backend
+            loadQuizResponses(quizId);
+        }
+
+        function loadQuizResponses(quizId) {
+            fetch(`/quiz/get-responses/${quizId}/`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayQuizResponses(data.responses, data.statistics);
+                } else {
+                    document.getElementById('responsesTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center text-danger py-4">
+                                <i class="bi bi-exclamation-triangle display-4"></i>
+                                <h5 class="mt-3">Error Loading Responses</h5>
+                                <p class="mt-1">${data.message || 'Unable to load quiz responses.'}</p>
+                            </td>
+                        </tr>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading responses:', error);
+                document.getElementById('responsesTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-danger py-4">
+                            <i class="bi bi-exclamation-triangle display-4"></i>
+                            <h5 class="mt-3">Network Error</h5>
+                            <p class="mt-1">Unable to connect to the server. Please try again.</p>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function displayQuizResponses(responses, statistics) {
+            // Update statistics
+            document.getElementById('totalAttempts').textContent = statistics.total_attempts || 0;
+            document.getElementById('averageScore').textContent = statistics.average_score ? `${statistics.average_score}%` : '0%';
+            document.getElementById('passRate').textContent = statistics.pass_rate ? `${statistics.pass_rate}%` : '0%';
+            
+            // Clear table body
+            const tableBody = document.getElementById('responsesTableBody');
+            tableBody.innerHTML = '';
+            
+            if (responses.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox display-4"></i>
+                            <h5 class="mt-3">No Responses Yet</h5>
+                            <p class="mt-1">No students have attempted this quiz yet.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Populate table with responses
+            responses.forEach(response => {
+                const row = document.createElement('tr');
+                
+                const statusBadge = getStatusBadge(response.status);
+                const percentageBadge = getPercentageBadge(response.percentage);
+                
+                row.innerHTML = `
+                    <td><strong>${response.student_name}</strong></td>
+                    <td>${response.student_id}</td>
+                    <td>${formatDate(response.submitted_at)}</td>
+                    <td>${statusBadge}</td>
+                    <td><strong>${response.marks_obtained}/${response.total_marks}</strong></td>
+                    <td>${percentageBadge}</td>
+                    <td>${response.time_taken || 'N/A'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info" onclick="viewResponseDetails(${response.attempt_id})" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        function viewResponseDetails(attemptId) {
+            fetch(`/quiz/get-response-details/${attemptId}/`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayResponseDetails(data.response);
+                } else {
+                    alert('Error: ' + (data.message || 'Unable to load response details'));
+                }
+            })
+            .catch(error => {
+                console.error('Error loading response details:', error);
+                alert('Network error: Unable to load response details');
+            });
+        }
+
+        function displayResponseDetails(response) {
+            // Update response details section
+            document.getElementById('responseStudentName').textContent = response.student_name;
+            document.getElementById('responseTotalMarks').textContent = response.total_marks;
+            document.getElementById('responseObtainedMarks').textContent = response.marks_obtained;
+            document.getElementById('responsePercentage').textContent = `${response.percentage}%`;
+            document.getElementById('responseTimeTaken').textContent = response.time_taken || 'N/A';
+            
+            // Clear and populate question answers
+            const questionAnswersList = document.getElementById('questionAnswersList');
+            questionAnswersList.innerHTML = '';
+            
+            if (response.answers && response.answers.length > 0) {
+                response.answers.forEach((answer, index) => {
+                    const answerDiv = document.createElement('div');
+                    answerDiv.className = 'card mb-3';
+                    
+                    const correctBadge = answer.is_correct ? 
+                        '<span class="badge bg-success">Correct</span>' : 
+                        '<span class="badge bg-danger">Incorrect</span>';
+                    
+                    answerDiv.innerHTML = `
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                Question ${index + 1} 
+                                <small class="text-muted">(${answer.marks} marks)</small>
+                                ${correctBadge}
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Question:</strong> ${answer.question_text}</p>
+                            <p class="mb-2"><strong>Your Answer:</strong> ${answer.selected_answer || answer.text_answer || 'Not answered'}</p>
+                            ${answer.correct_answer ? `<p class="mb-2"><strong>Correct Answer:</strong> ${answer.correct_answer}</p>` : ''}
+                            <p class="mb-0"><strong>Marks Obtained:</strong> ${answer.marks_obtained}/${answer.marks}</p>
+                        </div>
+                    `;
+                    
+                    questionAnswersList.appendChild(answerDiv);
+                });
+            } else {
+                questionAnswersList.innerHTML = '<p class="text-muted">No answer details available.</p>';
+            }
+            
+            // Show response details section
+            document.getElementById('responseDetails').style.display = 'block';
+            
+            // Scroll to response details
+            document.getElementById('responseDetails').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'completed': '<span class="badge bg-success">Completed</span>',
+                'in_progress': '<span class="badge bg-warning">In Progress</span>',
+                'expired': '<span class="badge bg-danger">Expired</span>',
+                'not_started': '<span class="badge bg-secondary">Not Started</span>'
+            };
+            return badges[status] || badges['not_started'];
+        }
+
+        function getPercentageBadge(percentage) {
+            if (percentage >= 60) {
+                return `<span class="badge bg-success">${percentage}%</span>`;
+            } else if (percentage >= 40) {
+                return `<span class="badge bg-warning">${percentage}%</span>`;
+            } else {
+                return `<span class="badge bg-danger">${percentage}%</span>`;
+            }
+        }
+
+        function exportResponses() {
+            // Placeholder for export functionality
+            alert('Export functionality will be implemented soon!');
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+
+</body>
+
+</html>

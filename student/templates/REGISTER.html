@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Registration - Student 360 Platform</title>
+
+    
+
+    <!-- Bootstrap 5 CSS -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    
+
+    <style>
+
+        body {
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+
+        }
+
+
+
+        .registration-container {
+
+            background: rgba(255, 255, 255, 0.95);
+
+            backdrop-filter: blur(10px);
+
+            border-radius: 20px;
+
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+            overflow: hidden;
+
+            width: 100%;
+
+            max-width: 800px;
+
+            animation: slideUp 0.6s ease-out;
+
+        }
+
+
+
+        @keyframes slideUp {
+
+            from {
+
+                opacity: 0;
+
+                transform: translateY(30px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform: translateY(0);
+
+            }
+
+        }
+
+
+
+        .header {
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            color: white;
+
+            padding: 30px;
+
+            text-align: center;
+
+        }
+
+
+
+        .header h1 {
+
+            font-size: 1.8rem;
+
+            margin-bottom: 5px;
+
+            font-weight: 700;
+
+        }
+
+
+
+        .header p {
+
+            opacity: 0.9;
+
+            font-size: 0.95rem;
+
+        }
+
+
+
+        .form-container {
+
+            padding: 30px;
+
+        }
+
+
+
+        .form-group {
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .form-group label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: 600;
+
+            color: #333;
+
+        }
+
+
+
+        .form-control, .form-select {
+
+            width: 100%;
+
+            padding: 12px 15px;
+
+            border: 2px solid #e0e0e0;
+
+            border-radius: 10px;
+
+            font-size: 1rem;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .form-control:focus, .form-select:focus {
+
+            outline: none;
+
+            border-color: #667eea;
+
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+
+        }
+
+
+
+        .submit-btn {
+
+            width: 100%;
+
+            padding: 15px;
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            color: white;
+
+            border: none;
+
+            border-radius: 10px;
+
+            font-size: 1.1rem;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .submit-btn:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+
+        }
+
+
+
+        .alert-custom {
+
+            border-radius: 10px;
+
+            border: none;
+
+            padding: 15px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .input-group-text {
+
+            background: #f8f9fa;
+
+            border: 2px solid #e0e0e0;
+
+            border-right: none;
+
+        }
+
+
+
+        .input-group .form-control {
+
+            border-left: none;
+
+        }
+
+
+
+        .input-group .form-control,
+
+        .input-group .input-group-text {
+
+            border-radius: 10px;
+
+        }
+
+
+
+        .input-group .form-control {
+
+            border-radius: 0 10px 10px 0;
+
+        }
+
+
+
+        .input-group .input-group-text {
+
+            border-radius: 10px 0 0 10px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="registration-container">
+
+        <div class="header">
+
+            <h1><i class="bi bi-person-plus-fill me-2"></i>Student Registration</h1>
+
+            <p>Join the Student 360 Platform</p>
+
+        </div>
+
+
+
+        <div class="form-container">
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="alert alert-{{ message.tags }} alert-custom">
+
+                        <i class="bi bi-info-circle me-2"></i>{{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+
+
+            <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+
+                            <label for="firstName" class="form-label">
+
+                                <i class="bi bi-person me-1"></i>First Name
+
+                            </label>
+
+                            <input type="text" class="form-control" id="firstName" name="firstName" required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+
+                            <label for="lastName" class="form-label">
+
+                                <i class="bi bi-person me-1"></i>Last Name
+
+                            </label>
+
+                            <input type="text" class="form-control" id="lastName" name="lastName" required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+
+                            <label for="studentImage" class="form-label">
+
+                                <i class="bi bi-image me-1"></i>Student Image
+
+                            </label>
+
+                            <input type="file" class="form-control" id="studentImage" name="studentImage" accept="image/*">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+
+                            <label for="fatherName" class="form-label">
+
+                                <i class="bi bi-person me-1"></i>Father's Name
+
+                            </label>
+
+                            <input type="text" class="form-control" id="fatherName" name="fatherName" placeholder="Enter father's name">
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+
+                            <label for="fatherOccupation" class="form-label">
+
+                                <i class="bi bi-briefcase me-1"></i>Father's Occupation
+
+                            </label>
+
+                            <input type="text" class="form-control" id="fatherOccupation" name="fatherOccupation" placeholder="Enter father's occupation">
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+
+                            <label for="fatherImage" class="form-label">
+
+                                <i class="bi bi-image me-1"></i>Father's Image
+
+                            </label>
+
+                            <input type="file" class="form-control" id="fatherImage" name="fatherImage" accept="image/*">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+
+                            <label for="motherName" class="form-label">
+
+                                <i class="bi bi-person me-1"></i>Mother's Name
+
+                            </label>
+
+                            <input type="text" class="form-control" id="motherName" name="motherName" placeholder="Enter mother's name">
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+
+                            <label for="motherOccupation" class="form-label">
+
+                                <i class="bi bi-briefcase me-1"></i>Mother's Occupation
+
+                            </label>
+
+                            <input type="text" class="form-control" id="motherOccupation" name="motherOccupation" placeholder="Enter mother's occupation">
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+
+                            <label for="motherImage" class="form-label">
+
+                                <i class="bi bi-image me-1"></i>Mother's Image
+
+                            </label>
+
+                            <input type="file" class="form-control" id="motherImage" name="motherImage" accept="image/*">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                
+
+                <!-- Personal Information Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Personal Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="hobby" class="form-label">
+                                        <i class="bi bi-heart me-1"></i>Hobby
+                                    </label>
+                                    <input type="text" class="form-control" id="hobby" name="hobby" placeholder="Enter your hobbies">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="bloodGroup" class="form-label">
+                                        <i class="bi bi-droplet me-1"></i>Blood Group
+                                    </label>
+                                    <select class="form-select" id="bloodGroup" name="bloodGroup">
+                                        <option value="">Select Blood Group</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="aimOfLife" class="form-label">
+                                        <i class="bi bi-target me-1"></i>Aim of Life
+                                    </label>
+                                    <textarea class="form-control" id="aimOfLife" name="aimOfLife" rows="3" placeholder="Describe your aim in life..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="address" class="form-label">
+                                        <i class="bi bi-geo-alt me-1"></i>Address
+                                    </label>
+                                    <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter your complete address..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+
+                            <label for="gender" class="form-label">
+
+                                <i class="bi bi-gender-ambiguous me-1"></i>Gender
+
+                            </label>
+
+                            <select class="form-select" id="gender" name="gender" required>
+
+                                <option value="">Select Gender</option>
+
+                                <option value="male">Male</option>
+
+                                <option value="female">Female</option>
+
+                                <option value="other">Other</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+
+                            <label for="dateOfBirth" class="form-label">
+
+                                <i class="bi bi-calendar-date me-1"></i>Date of Birth
+
+                            </label>
+
+                            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" required>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="email" class="form-label">
+
+                        <i class="bi bi-envelope me-1"></i>Email Address
+
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">@</span>
+
+                        <input type="email" class="form-control" id="email" name="email" required>
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="mobileNo" class="form-label">
+
+                        <i class="bi bi-phone me-1"></i>Mobile No
+
+                    </label>
+
+                    <input type="tel" class="form-control" id="mobileNo" name="mobileNo" placeholder="Enter mobile number" pattern="[0-9]{10}" maxlength="10">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="studentId" class="form-label">
+
+                        <i class="bi bi-card-text me-1"></i>Student ID
+
+                    </label>
+
+                    <input type="text" class="form-control" id="studentId" name="studentId" required>
+
+                </div>
+
+
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+
+                            <label for="course" class="form-label">
+
+                                <i class="bi bi-book me-1"></i>Course
+
+                            </label>
+
+                            <select class="form-select" id="course" name="course" required>
+
+                                <option value="">Select Course</option>
+
+                                <option value="computer-science">Computer Science</option>
+
+                                <option value="engineering">Engineering</option>
+
+                                <option value="business">Business Administration</option>
+
+                                <option value="arts">Arts & Science</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+
+                            <label for="semester" class="form-label">
+
+                                <i class="bi bi-calendar3 me-1"></i>Semester
+
+                            </label>
+
+                            <select class="form-select" id="semester" name="semester" required>
+
+                                <option value="">Select Semester</option>
+
+                                <option value="1">1st Semester</option>
+
+                                <option value="2">2nd Semester</option>
+
+                                <option value="3">3rd Semester</option>
+
+                                <option value="4">4th Semester</option>
+
+                                <option value="5">5th Semester</option>
+
+                                <option value="6">6th Semester</option>
+
+                                <option value="7">7th Semester</option>
+
+                                <option value="8">8th Semester</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="batch" class="form-label">
+
+                        <i class="bi bi-people me-1"></i>Batch
+
+                    </label>
+
+                    <input type="text" class="form-control" id="batch" name="batch" placeholder="e.g., 2023-2027" required>
+
+                </div>
+
+
+
+                <!-- Academics Section -->
+
+                <div class="card mb-4">
+
+                    <div class="card-header bg-primary text-white">
+
+                        <h5 class="mb-0"><i class="bi bi-mortarboard me-2"></i>Academic Information</h5>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- 10th Grade -->
+
+                        <div class="row mb-3">
+
+                            <div class="col-12">
+
+                                <h6 class="text-muted mb-3"><i class="bi bi-award me-1"></i>10th Grade Details</h6>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="tenthBoard" class="form-label">Board</label>
+
+                                    <select class="form-select" id="tenthBoard" name="tenthBoard" required>
+
+                                        <option value="">Select Board</option>
+
+                                        <option value="cbse">CBSE</option>
+
+                                        <option value="state">State Board</option>
+
+                                        <option value="icse">ICSE</option>
+
+                                        <option value="other">Other</option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="tenthPercentage" class="form-label">Percentage (%)</label>
+
+                                    <input type="number" class="form-control" id="tenthPercentage" name="tenthPercentage" 
+
+                                           min="0" max="100" step="0.1" placeholder="Optional">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="tenthYear" class="form-label">Year of Passing</label>
+
+                                    <input type="number" class="form-control" id="tenthYear" name="tenthYear" 
+
+                                           min="2000" max="2025" placeholder="Optional">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- 12th Grade -->
+
+                        <div class="row mb-3">
+
+                            <div class="col-12">
+
+                                <h6 class="text-muted mb-3"><i class="bi bi-award me-1"></i>12th Grade Details</h6>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="twelfthBoard" class="form-label">Board</label>
+
+                                    <select class="form-select" id="twelfthBoard" name="twelfthBoard">
+
+                                        <option value="">Select Board (Optional)</option>
+
+                                        <option value="cbse">CBSE</option>
+
+                                        <option value="state">State Board</option>
+
+                                        <option value="icse">ICSE</option>
+
+                                        <option value="other">Other</option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="twelfthPercentage" class="form-label">Percentage (%)</label>
+
+                                    <input type="number" class="form-control" id="twelfthPercentage" name="twelfthPercentage" 
+
+                                           min="0" max="100" step="0.1" placeholder="Optional">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="twelfthYear" class="form-label">Year of Passing</label>
+
+                                    <input type="number" class="form-control" id="twelfthYear" name="twelfthYear" 
+
+                                           min="2000" max="2025" placeholder="Optional">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Diploma Education -->
+
+                        <div class="row mb-3">
+
+                            <div class="col-12">
+
+                                <h6 class="text-muted mb-3"><i class="bi bi-mortarboard me-1"></i>Diploma Details</h6>
+
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+
+                                    <label for="diplomaCourse" class="form-label">Diploma Course</label>
+
+                                    <input type="text" class="form-control" id="diplomaCourse" name="diplomaCourse" placeholder="Optional">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+
+                                    <label for="diplomaInstitution" class="form-label">Institution</label>
+
+                                    <input type="text" class="form-control" id="diplomaInstitution" name="diplomaInstitution" placeholder="Optional">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+
+                                    <label for="diplomaPercentage" class="form-label">Percentage (%)</label>
+
+                                    <input type="number" class="form-control" id="diplomaPercentage" name="diplomaPercentage" 
+
+                                           min="0" max="100" step="0.1" placeholder="Optional">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+
+                                    <label for="diplomaYear" class="form-label">Year of Passing</label>
+
+                                    <input type="number" class="form-control" id="diplomaYear" name="diplomaYear" 
+
+                                           min="2000" max="2025" placeholder="Optional">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Graduate Education -->
+
+                        <div class="row">
+
+                            <div class="col-12">
+
+                                <h6 class="text-muted mb-3"><i class="bi bi-award me-1"></i>Graduate Education (if applicable)</h6>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+
+                                    <label for="graduationDegree" class="form-label">Degree</label>
+
+                                    <select class="form-select" id="graduationDegree" name="graduationDegree">
+
+                                        <option value="">Not Applicable</option>
+
+                                        <option value="btech">B.Tech</option>
+
+                                        <option value="be">B.E.</option>
+
+                                        <option value="bca">BCA</option>
+
+                                        <option value="bcom">B.Com</option>
+
+                                        <option value="ba">B.A.</option>
+
+                                        <option value="bsc">B.Sc.</option>
+
+                                        <option value="other">Other</option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+
+                                    <label for="graduationUniversity" class="form-label">University</label>
+
+                                    <input type="text" class="form-control" id="graduationUniversity" name="graduationUniversity" 
+
+                                           placeholder="Enter university name">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="graduationPercentage" class="form-label">Percentage/CGPA</label>
+
+                                    <input type="number" class="form-control" id="graduationPercentage" name="graduationPercentage" 
+
+                                           min="0" max="100" step="0.1" placeholder="e.g., 75.5 or 8.5">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="graduationYear" class="form-label">Year of Passing</label>
+
+                                    <input type="number" class="form-control" id="graduationYear" name="graduationYear" 
+
+                                           min="2000" max="2025" placeholder="e.g., 2023">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="graduationStatus" class="form-label">Status</label>
+
+                                    <select class="form-select" id="graduationStatus" name="graduationStatus">
+
+                                        <option value="">Select Status</option>
+
+                                        <option value="completed">Completed</option>
+
+                                        <option value="pursuing">Pursuing</option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <button type="submit" class="submit-btn">
+
+                    <i class="bi bi-check-circle me-2"></i>Complete Registration
+
+                </button>
+
+            </form>
+
+
+
+            <div class="text-center mt-4">
+
+                <a href="{% url 'login' %}" class="text-muted">
+
+                    <i class="bi bi-arrow-left me-1"></i>Back to Login
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Bootstrap 5 JS Bundle -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,72 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 60%;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+h2 {
+    color: #34495e;
+    margin-top: 25px;
+}
+
+.student-info p,
+.status-box p,
+.action p {
+    font-size: 16px;
+}
+
+.status {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.verified {
+    color: green;
+    font-weight: bold;
+}
+
+.pending {
+    color: orange;
+    font-weight: bold;
+}
+
+.rejected {
+    color: red;
+    font-weight: bold;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    margin: 8px 0;
+}
+
+.status-box {
+    padding: 15px;
+    background: #eef2f7;
+    border-radius: 5px;
+}
+
+.action {
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 5px;
+}
